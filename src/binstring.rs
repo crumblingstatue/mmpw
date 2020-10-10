@@ -63,7 +63,7 @@ impl BinString {
                 .iter()
                 .position(|&v| v == *alpha_val)
                 .unwrap_or(0);
-            let pack = FiveBitPack(idx.try_into().unwrap());
+            let pack: u8 = idx.try_into().unwrap();
             for n in 0..5 {
                 vec[i * 5 + n as usize] = pack.nth_bit_from_left(n);
             }
@@ -143,13 +143,13 @@ fn hash_filter_map(key: u8) -> Option<u8> {
     }
 }
 
-/// A package of five bits
-#[derive(Clone, Copy)]
-struct FiveBitPack(u8);
+trait FiveBitPackExt {
+    fn nth_bit_from_left(self, idx: u8) -> u8;
+}
 
-impl FiveBitPack {
+impl FiveBitPackExt for u8 {
     fn nth_bit_from_left(self, idx: u8) -> u8 {
-        if self.0 & 0b0001_0000 >> idx == 0 {
+        if self & 0b0001_0000 >> idx == 0 {
             0
         } else {
             1
@@ -159,11 +159,11 @@ impl FiveBitPack {
 
 #[test]
 fn test_nth_bit_from_left() {
-    assert_eq!(FiveBitPack(0b10110).nth_bit_from_left(0), 1);
-    assert_eq!(FiveBitPack(0b10110).nth_bit_from_left(1), 0);
-    assert_eq!(FiveBitPack(0b10110).nth_bit_from_left(2), 1);
-    assert_eq!(FiveBitPack(0b10110).nth_bit_from_left(3), 1);
-    assert_eq!(FiveBitPack(0b10110).nth_bit_from_left(4), 0);
+    assert_eq!(0b10110.nth_bit_from_left(0), 1);
+    assert_eq!(0b10110.nth_bit_from_left(1), 0);
+    assert_eq!(0b10110.nth_bit_from_left(2), 1);
+    assert_eq!(0b10110.nth_bit_from_left(3), 1);
+    assert_eq!(0b10110.nth_bit_from_left(4), 0);
 }
 
 fn unshuffle(input: &mut [u8]) {
