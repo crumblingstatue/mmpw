@@ -91,9 +91,9 @@ impl BinString {
         Reader { source: &self.0 }
     }
     pub fn calc_checksum(&self) -> u32 {
-        let digits_to_read = crate::LEN * 5 - crate::CKSUM_BITS;
+        const DIGITS_TO_READ: u8 = crate::LEN * 5 - crate::CKSUM_BITS;
         let mut checksum = CKSUM_INTS[0];
-        for i in 0..digits_to_read {
+        for i in 0..DIGITS_TO_READ {
             if self.0[i as usize] == 0 {
                 checksum = checksum.wrapping_add(CKSUM_INTS[i as usize % CKSUM_INTS.len()]);
             } else {
