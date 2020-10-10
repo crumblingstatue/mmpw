@@ -167,11 +167,15 @@ fn test_nth_bit_from_left() {
 }
 
 fn unshuffle(input: &mut [u8]) {
-    let mut work_buffer = ArrayByteVec::<90>::zeroed_with_len(input.len());
-    one_unshuffle::<5>(input, &mut work_buffer);
-    one_unshuffle::<3>(&work_buffer, input);
-    one_unshuffle::<2>(input, &mut work_buffer);
-    input.copy_from_slice(&work_buffer);
+    if input.len() == 90 {
+        unshuffle_90(input);
+    } else {
+        let mut work_buffer = ArrayByteVec::<90>::zeroed_with_len(input.len());
+        one_unshuffle::<5>(input, &mut work_buffer);
+        one_unshuffle::<3>(&work_buffer, input);
+        one_unshuffle::<2>(input, &mut work_buffer);
+        input.copy_from_slice(&work_buffer);
+    }
 }
 
 fn one_unshuffle<const PARTS: usize>(input: &[u8], output: &mut [u8]) {
@@ -200,7 +204,7 @@ fn one_unshuffle<const PARTS: usize>(input: &[u8], output: &mut [u8]) {
 }
 
 // Thank you Teddy for the awesome optimization!
-/*fn unshuffle_90(input: &mut [u8]) {
+fn unshuffle_90(input: &mut [u8]) {
     const INDEX_VEC: [usize; 90] = [
         2, 87, 81, 8, 14, 75, 33, 56, 62, 27, 21, 68, 38, 51, 45, 44, 50, 39, 69, 20, 26, 63, 57,
         32, 74, 15, 9, 80, 86, 3, 1, 88, 82, 7, 13, 76, 34, 55, 61, 28, 22, 67, 37, 52, 46, 43, 49,
@@ -212,7 +216,7 @@ fn one_unshuffle<const PARTS: usize>(input: &[u8], output: &mut [u8]) {
         new[i] = input[INDEX_VEC[i]];
     }
     input.copy_from_slice(&new);
-}*/
+}
 
 fn read_bin(bin: &[u8]) -> u16 {
     let mut result = 0;
