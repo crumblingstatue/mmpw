@@ -17,10 +17,6 @@ codegen-units = 1
 [dev-dependencies]
 criterion = "0.3.3"
 
-[lib]
-name = "mmpw"
-path = "src/main.rs"
-
 [[bench]]
 name = "validate"
 harness = false

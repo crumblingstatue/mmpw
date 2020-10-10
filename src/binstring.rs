@@ -129,6 +129,9 @@ impl<'a> Reader<'a> {
     pub fn len(&self) -> usize {
         self.source.len()
     }
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 fn hash_filter_map(key: u8) -> Option<u8> {
