@@ -15,7 +15,7 @@ include!("words.inc.rs");
 type Password = [u8; LEN as usize];
 
 pub fn validate(pw: &Password, key: &BinString) -> bool {
-    let mut bs = BinString::from_password(pw);
+    let mut bs = BinString::from_alphanumeric(pw);
     bs.hash(key);
     let mut reader = bs.reader();
     if reader.next_int(1) == 1 {

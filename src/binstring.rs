@@ -71,9 +71,6 @@ impl BinString {
         unshuffle(&mut vec);
         Self(vec)
     }
-    pub fn from_password(pw: &crate::Password) -> Self {
-        Self::from_alphanumeric(pw)
-    }
     pub fn hash(&mut self, key: &BinString) {
         // Apply the hash
         for i in 0..self.0.len() {
