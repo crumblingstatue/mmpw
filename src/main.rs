@@ -1,7 +1,7 @@
 #![feature(min_const_generics)]
 
 mod array_byte_vec;
-mod binstring;
+pub mod binstring;
 
 use binstring::BinString;
 use rand::{seq::SliceRandom, thread_rng, Rng};
@@ -14,7 +14,7 @@ include!("words.inc.rs");
 
 type Password = [u8; LEN as usize];
 
-fn validate(pw: &Password, key: &BinString) -> bool {
+pub fn validate(pw: &Password, key: &BinString) -> bool {
     let mut bs = BinString::from_password(pw);
     bs.hash(key);
     let mut reader = bs.reader();
