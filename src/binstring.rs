@@ -72,6 +72,7 @@ impl BinString {
         Self(vec)
     }
     pub fn hash(&mut self, key: &BinString) {
+        assert!(self.0.len() <= 90);
         // Apply the hash
         for i in 0..self.0.len() {
             let value = if key.0[i % key.0.len()] == 1 {
