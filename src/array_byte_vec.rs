@@ -20,9 +20,6 @@ impl<const N: usize> ArrayByteVec<N> {
         self.array[index] = value;
         self.len += 1;
     }
-    pub fn len(&self) -> usize {
-        self.len
-    }
 }
 
 impl<const N: usize> Index<u8> for ArrayByteVec<N> {
