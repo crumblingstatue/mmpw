@@ -74,13 +74,12 @@ impl BinString {
     pub fn hash(&mut self, key: &BinString) {
         assert!(self.0.len() <= 90);
         // Apply the hash
-        for i in 0..self.0.len() {
+        for (i, byte) in self.0.iter_mut().enumerate() {
             if key.0[i % key.0.len()] == 1 {
-                let val = &mut self.0[i];
-                if *val == 0 {
-                    *val = 1;
+                if *byte == 0 {
+                    *byte = 1;
                 } else {
-                    *val = 0;
+                    *byte = 0;
                 }
             }
         }
