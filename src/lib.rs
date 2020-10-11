@@ -28,8 +28,8 @@ pub fn validate(pw: &Password, key: &BinString) -> bool {
     if rank > 65 {
         return false;
     }
-    if reader.len() > CKSUM_BITS as usize {
-        reader.advance(reader.len() - CKSUM_BITS as usize);
+    if reader.remaining() > CKSUM_BITS as usize {
+        reader.advance(reader.remaining() - CKSUM_BITS as usize);
     }
     let parsed_cksum = reader.next_int(CKSUM_BITS as usize);
     parsed_cksum as u32 == bs.calc_checksum()

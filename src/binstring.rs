@@ -123,11 +123,8 @@ impl<'a> Reader<'a> {
     pub fn advance(&mut self, len: usize) {
         self.source = &self.source[len..]
     }
-    pub fn len(&self) -> usize {
+    pub fn remaining(&self) -> usize {
         self.source.len()
-    }
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
     }
 }
 
