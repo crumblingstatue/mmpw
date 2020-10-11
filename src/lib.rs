@@ -1,4 +1,4 @@
-#![feature(min_const_generics)]
+#![feature(min_const_generics, const_int_pow)]
 
 mod array_byte_vec;
 pub mod binstring;
