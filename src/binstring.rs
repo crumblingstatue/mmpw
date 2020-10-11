@@ -1,40 +1,42 @@
 use crate::array_byte_vec::ArrayByteVec;
-use std::convert::TryInto;
 
-const ALPHA_CODES: [u8; 32] = [
-    b'3', // 00000
-    b'H', // 00001
-    b'G', // 00010
-    b'F', // 00011
-    b'R', // 00100
-    b'6', // 00101
-    b'8', // 00110
-    b'I', // 00111
-    b'Q', // 01000
-    b'W', // 01001
-    b'J', // 01010
-    b'5', // 01011
-    b'X', // 01100
-    b'T', // 01101
-    b'K', // 01110
-    b'Z', // 01111
-    b'A', // 10000
-    b'Y', // 10001
-    b'7', // 10010
-    b'O', // 10011
-    b'9', // 10100
-    b'4', // 10101
-    b'P', // 10110
-    b'D', // 10111
-    b'U', // 11000
-    b'C', // 11001
-    b'E', // 11010
-    b'S', // 11011
-    b'M', // 11100
-    b'N', // 11101
-    b'B', // 11110
-    b'L', // 11111
-];
+const fn alnum_to_bin(alnum: u8) -> u8 {
+    match alnum {
+        b'3' => 0b00000,
+        b'H' => 0b00001,
+        b'G' => 0b00010,
+        b'F' => 0b00011,
+        b'R' => 0b00100,
+        b'6' => 0b00101,
+        b'8' => 0b00110,
+        b'I' => 0b00111,
+        b'Q' => 0b01000,
+        b'W' => 0b01001,
+        b'J' => 0b01010,
+        b'5' => 0b01011,
+        b'X' => 0b01100,
+        b'T' => 0b01101,
+        b'K' => 0b01110,
+        b'Z' => 0b01111,
+        b'A' => 0b10000,
+        b'Y' => 0b10001,
+        b'7' => 0b10010,
+        b'O' => 0b10011,
+        b'9' => 0b10100,
+        b'4' => 0b10101,
+        b'P' => 0b10110,
+        b'D' => 0b10111,
+        b'U' => 0b11000,
+        b'C' => 0b11001,
+        b'E' => 0b11010,
+        b'S' => 0b11011,
+        b'M' => 0b11100,
+        b'N' => 0b11101,
+        b'B' => 0b11110,
+        b'L' => 0b11111,
+        _ => 0b00000,
+    }
+}
 
 const CKSUM_INTS: [u32; 100] = [
     608356525, 403119806, 600082856, 501903605, 395995676, 639983625, 520697153, 373011710,
@@ -58,14 +60,10 @@ pub struct BinString(ArrayByteVec<90>);
 impl BinString {
     pub fn from_alphanumeric(alnum: &[u8]) -> Self {
         let mut vec = ArrayByteVec::<90>::zeroed_with_len(alnum.len() * 5);
-        for (i, alpha_val) in alnum.iter().enumerate() {
-            let idx = ALPHA_CODES
-                .iter()
-                .position(|&v| v == *alpha_val)
-                .unwrap_or(0);
-            let pack: u8 = idx.try_into().unwrap();
+        for (i, &alpha_val) in alnum.iter().enumerate() {
+            let bin = alnum_to_bin(alpha_val);
             for n in 0..5 {
-                vec[i * 5 + n as usize] = pack.nth_bit_from_left(n);
+                vec[i * 5 + n as usize] = bin.nth_bit_from_left(n);
             }
         }
         unshuffle(&mut vec);
