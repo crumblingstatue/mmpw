@@ -39,4 +39,14 @@ pub fn validate(pw: &Password, key: &BinString) -> bool {
 fn test_validate() {
     let key = binstring::hash_name(b"DEW");
     assert_eq!(validate(b"88H4B75X8FR9C54577", &key), false);
+    assert_eq!(validate(b"NEARBYSNOTTYSNEEZE", &key), true);
+    assert_eq!(validate(b"DOUBLECLINGYCUBONE", &key), true);
+    assert_eq!(validate(b"DOUBLEWIZARDSHOULD", &key), true);
+    assert_eq!(validate(b"PERMITTICKLYTANGLE", &key), true);
+    assert_eq!(validate(b"MEWTWOCOMPLYSTREAM", &key), true);
+    assert_eq!(validate(b"MACHOPGRAPEYSTRESS", &key), true);
+    assert_eq!(validate(b"NOODLEPIPLUPCAUSAL", &key), true);
+    assert_eq!(validate(b"DEOXYSCOITALABLAZE", &key), true);
+    assert_eq!(validate(b"NICKITUPWARDPLIANT", &key), true);
+    assert_eq!(validate(b"BLOBBYBIDOOFNEGATE", &key), true);
 }
