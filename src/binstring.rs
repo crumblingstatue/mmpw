@@ -89,9 +89,9 @@ impl BinString {
         let mut checksum = CKSUM_INTS[0];
         for i in 0..DIGITS_TO_READ {
             if self.0[i as usize] == 0 {
-                checksum = checksum.wrapping_add(CKSUM_INTS[i as usize % CKSUM_INTS.len()]);
+                checksum = checksum.wrapping_add(CKSUM_INTS[i as usize]);
             } else {
-                checksum = checksum.wrapping_add(CKSUM_INTS[(i as usize + 17) % CKSUM_INTS.len()]);
+                checksum = checksum.wrapping_add(CKSUM_INTS[i as usize + 17]);
             }
         }
         checksum % 2u32.pow(crate::CKSUM_BITS as u32)
