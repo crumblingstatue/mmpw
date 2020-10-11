@@ -63,7 +63,7 @@ impl BinString {
         for (i, &alpha_val) in alnum.iter().enumerate() {
             let bin = alnum_to_bin(alpha_val);
             for n in 0..5 {
-                vec[i * 5 + n as usize] = bin.nth_bit_from_left(n);
+                vec[i as u8 * 5 + n] = bin.nth_bit_from_left(n);
             }
         }
         unshuffle(&mut vec);

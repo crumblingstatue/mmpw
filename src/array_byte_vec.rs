@@ -25,16 +25,16 @@ impl<const N: usize> ArrayByteVec<N> {
     }
 }
 
-impl<const N: usize> Index<usize> for ArrayByteVec<N> {
+impl<const N: usize> Index<u8> for ArrayByteVec<N> {
     type Output = u8;
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.array[index]
+    fn index(&self, index: u8) -> &Self::Output {
+        &self.array[index as usize]
     }
 }
 
-impl<const N: usize> IndexMut<usize> for ArrayByteVec<N> {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        &mut self.array[index]
+impl<const N: usize> IndexMut<u8> for ArrayByteVec<N> {
+    fn index_mut(&mut self, index: u8) -> &mut Self::Output {
+        &mut self.array[index as usize]
     }
 }
 
