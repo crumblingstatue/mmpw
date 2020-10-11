@@ -87,8 +87,9 @@ impl BinString {
     pub fn calc_checksum(&self) -> u32 {
         const DIGITS_TO_READ: u8 = crate::LEN * 5 - crate::CKSUM_BITS;
         let mut checksum = CKSUM_INTS[0];
+        let slice = &*self.0;
         for i in 0..DIGITS_TO_READ {
-            if self.0[i as usize] == 0 {
+            if slice[i as usize] == 0 {
                 checksum = checksum.wrapping_add(CKSUM_INTS[i as usize]);
             } else {
                 checksum = checksum.wrapping_add(CKSUM_INTS[i as usize + 17]);
