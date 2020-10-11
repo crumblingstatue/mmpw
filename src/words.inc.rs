@@ -1,4 +1,4 @@
-const SIX_LETTER_WORDS: [&[u8; 6]; 2031] = [
+const SIX_LETTER_WORDS: [&[u8; 6]; 2033] = [
     b"MEWTWO", b"PLANTS", b"SHIELD", b"FEMALE", b"COMFEY", b"FRANCE", b"YELLOW", b"SHIELD",
     b"ROWLET", b"GROTLE", b"LITTEN", b"RABOOT", b"MUDKIP", b"PIPLUP", b"EMBOAR", b"SOBBLE",
     b"DEWOTT", b"STARLY", b"FURRET", b"PATRAT", b"WEEDLE", b"BIDOOF", b"KAKUNA", b"LEDYBA",
@@ -252,5 +252,6 @@ const SIX_LETTER_WORDS: [&[u8; 6]; 2031] = [
     b"CLEANE", b"IRISED", b"GOOGLY", b"CLIFFY", b"ABORAL", b"LUTEAL", b"TITTED", b"ELFISH",
     b"ATTINE", b"UNLENT", b"WEIRDY", b"CUSPAL", b"GOBBLY", b"SWOOPY", b"PICRIC", b"LUCENT",
     b"ZONKED", b"WHEATY", b"VULPIX", b"JUSTIN", b"BAILEY", b"GROVYL", b"SMERGL", b"MONSTR",
-    b"HCROSS", b"SSLASH", b"AABRAA", b"MAGZON", b"KCLEON", b"LUCARI", b"CUTIES",
+    b"HCROSS", b"SSLASH", b"AABRAA", b"MAGZON", b"KCLEON", b"LUCARI", b"CUTIES", b"TURTLE",
+    b"MONSTA",
 ];
