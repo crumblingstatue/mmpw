@@ -75,16 +75,14 @@ impl BinString {
         assert!(self.0.len() <= 90);
         // Apply the hash
         for i in 0..self.0.len() {
-            let value = if key.0[i % key.0.len()] == 1 {
-                if self.0[i] == 0 {
-                    1
+            if key.0[i % key.0.len()] == 1 {
+                let val = &mut self.0[i];
+                if *val == 0 {
+                    *val = 1;
                 } else {
-                    0
+                    *val = 0;
                 }
-            } else {
-                self.0[i]
-            };
-            self.0[i] = value;
+            }
         }
     }
     pub fn reader(&self) -> Reader {
