@@ -38,14 +38,17 @@ struct Opt {
 fn permutate(key: &Key, words: &[Word]) {
     let mut s = [0; LEN as usize];
     let permutations = slice_permutations::SlicePermutations::<_, 3>::new(words);
+    let mut count = 0;
     for [a, b, c] in permutations {
         s[0..6].copy_from_slice(&a[..]);
         s[6..12].copy_from_slice(&b[..]);
         s[12..18].copy_from_slice(&c[..]);
         if validate(&s, key) {
             show(&s);
+            count += 1;
         }
     }
+    eprintln!("Finished. Found {} valid passwords", count);
 }
 
 fn go_random(key: &Key, words: &[Word]) {
