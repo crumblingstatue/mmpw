@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 rand = "0.7.3"
+structopt = "0.3.19"
 
 [profile.release]
 panic = "abort"
