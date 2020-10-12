@@ -69,7 +69,20 @@ fn show(pw: &Password) {
 
 fn prepare_words<'a>(words: impl Iterator<Item = &'a str>) -> Vec<[u8; 6]> {
     words
-        .filter_map(|word| word.as_bytes().try_into().ok())
+        .filter_map(|word| match word.as_bytes().try_into() {
+            Ok(word) => {
+                let mut word: Word = word;
+                word.make_ascii_uppercase();
+                Some(word)
+            }
+            Err(_) => {
+                eprintln!(
+                    "Warning: invalid word \'{}\'. It must be exactly 6 letters long.",
+                    word
+                );
+                None
+            }
+        })
         .collect()
 }
 
