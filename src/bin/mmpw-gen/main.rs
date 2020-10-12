@@ -12,6 +12,7 @@ type Word = [u8; 6];
 type Key = binstring::BinString;
 
 include!("words.inc.rs");
+include!("names.inc.rs");
 
 fn fill_rand_words(buf: &mut Password, rng: &mut impl Rng, words: &[Word]) {
     for i in 0..3 {
@@ -33,9 +34,12 @@ struct Opt {
     /// Try passwords in a random fashion instead of in order. This will never finish.
     #[structopt(short, long)]
     random: bool,
+    /// Try the same passwords with different names in hopes of it becoming valid with at least one.
+    #[structopt(short, long)]
+    brute_force_with_names: bool,
 }
 
-fn permutate(key: &Key, words: &[Word]) {
+fn permutate(key: &Key, words: &[Word], name: &str) -> usize {
     let mut s = [0; LEN as usize];
     let permutations = slice_permutations::SlicePermutations::<_, 3>::new(words);
     let mut count = 0;
@@ -44,27 +48,33 @@ fn permutate(key: &Key, words: &[Word]) {
         s[6..12].copy_from_slice(&b[..]);
         s[12..18].copy_from_slice(&c[..]);
         if validate(&s, key) {
-            show(&s);
+            show(&s, name);
             count += 1;
         }
     }
-    eprintln!("Finished. Found {} valid passwords", count);
+    count
 }
 
-fn go_random(key: &Key, words: &[Word]) {
+fn go_random(key: &Key, words: &[Word], name: &str) {
     let mut s = [0; LEN as usize];
     let mut rng = thread_rng();
     loop {
         fill_rand_words(&mut s, &mut rng, words);
         if validate(&s, key) {
-            show(&s);
+            show(&s, name);
         }
     }
 }
 
-fn show(pw: &Password) {
+fn show(pw: &Password, name: &str) {
     let utf = std::str::from_utf8(pw).unwrap();
-    println!("{} {} {}", &utf[0..6], &utf[6..12], &utf[12..]);
+    println!(
+        "name: {} password: {} {} {}",
+        name,
+        &utf[0..6],
+        &utf[6..12],
+        &utf[12..]
+    );
 }
 
 fn prepare_words<'a>(words: impl Iterator<Item = &'a str>) -> Vec<[u8; 6]> {
@@ -94,7 +104,6 @@ fn load_words(path: &Path) -> Vec<[u8; 6]> {
 
 fn main() {
     let opt = Opt::from_args();
-    let key = binstring::hash_name(opt.name.as_bytes());
     let words: Vec<Word>;
     let words: &[Word] = match (opt.custom_words, opt.custom_word_file) {
         (None, None) => &SIX_LETTER_WORDS,
@@ -108,9 +117,22 @@ fn main() {
         }
     };
 
+    let mut key_name_pairs = Vec::new();
+    key_name_pairs.push((binstring::hash_name(opt.name.as_bytes()), &opt.name[..]));
+
+    if opt.brute_force_with_names {
+        for name in NAMES.iter() {
+            key_name_pairs.push((binstring::hash_name(name.as_bytes()), name));
+        }
+    }
+
     if opt.random {
-        go_random(&key, words);
+        go_random(&key_name_pairs[0].0, words, &key_name_pairs[0].1);
     } else {
-        permutate(&key, words);
+        let mut count = 0;
+        for (key, name) in key_name_pairs {
+            count += permutate(&key, words, name);
+        }
+        eprintln!("Finished. Found {} valid passwords", count);
     }
 }
