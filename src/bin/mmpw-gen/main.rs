@@ -77,23 +77,32 @@ fn show(pw: &Password, name: &str) {
     );
 }
 
-fn prepare_words<'a>(words: impl Iterator<Item = &'a str>) -> Vec<[u8; 6]> {
-    words
-        .filter_map(|word| match word.as_bytes().try_into() {
-            Ok(word) => {
-                let mut word: Word = word;
-                word.make_ascii_uppercase();
-                Some(word)
-            }
-            Err(_) => {
+fn word_filter_map(word: &str) -> Option<[u8; 6]> {
+    match word.as_bytes().try_into() {
+        Ok(bword) => {
+            let mut bword: Word = bword;
+            bword.make_ascii_uppercase();
+            if bword.contains(&b'V') {
                 eprintln!(
-                    "Warning: invalid word \'{}\'. It must be exactly 6 letters long.",
+                    "Warning: invalid word: \'{}\'. Passwords cannot contain the letter V.",
                     word
                 );
-                None
+                return None;
             }
-        })
-        .collect()
+            Some(bword)
+        }
+        Err(_) => {
+            eprintln!(
+                "Warning: invalid word \'{}\'. It must be exactly 6 letters long.",
+                word
+            );
+            None
+        }
+    }
+}
+
+fn prepare_words<'a>(words: impl Iterator<Item = &'a str>) -> Vec<[u8; 6]> {
+    words.filter_map(word_filter_map).collect()
 }
 
 fn load_words(path: &Path) -> Vec<[u8; 6]> {
