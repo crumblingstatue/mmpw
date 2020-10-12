@@ -17,6 +17,9 @@ impl<'a, T, const SLOTS: usize> SlicePermutations<'a, T, SLOTS> {
 impl<'a, T, const SLOTS: usize> Iterator for SlicePermutations<'a, T, SLOTS> {
     type Item = [&'a T; SLOTS];
     fn next(&mut self) -> Option<Self::Item> {
+        if self.slice.is_empty() {
+            return None;
+        }
         let mut arr = [&self.slice[0]; SLOTS];
         if self.first {
             self.first = false;
