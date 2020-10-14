@@ -1,6 +1,6 @@
 #![feature(min_const_generics)]
 
-use mmpw::{binstring, validate, Password, LEN};
+use mmpw_validate::{binstring, validate, Password, LEN};
 use rand::{seq::SliceRandom, thread_rng, Rng};
 use std::convert::TryInto;
 use std::path::{Path, PathBuf};
