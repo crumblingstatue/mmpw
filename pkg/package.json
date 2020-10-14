@@ -1,0 +1,15 @@
+{
+  "name": "mmpw-web",
+  "collaborators": [
+    "crumblingstatue <radiantstatue@gmail.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "mmpw_web_bg.wasm",
+    "mmpw_web.js",
+    "mmpw_web.d.ts"
+  ],
+  "module": "mmpw_web.js",
+  "types": "mmpw_web.d.ts",
+  "sideEffects": false
+}
