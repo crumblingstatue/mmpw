@@ -3,7 +3,6 @@
 use mmpw_validate::{binstring::BinString, validate, Password, LEN};
 use rand::{prelude::SliceRandom, thread_rng, Rng};
 use std::convert::TryInto;
-use std::path::Path;
 
 pub use data::{NAMES, SIX_LETTER_WORDS};
 
@@ -84,10 +83,4 @@ fn word_filter_map(word: &str) -> Option<[u8; 6]> {
 
 pub fn prepare_words<'a>(words: impl Iterator<Item = &'a str>) -> Vec<[u8; 6]> {
     words.filter_map(word_filter_map).collect()
-}
-
-pub fn load_words(path: &Path) -> Vec<[u8; 6]> {
-    let text = std::fs::read_to_string(path).unwrap();
-    let words = text.split_whitespace();
-    prepare_words(words)
 }

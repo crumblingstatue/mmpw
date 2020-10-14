@@ -1,7 +1,13 @@
-use mmpw_gen::{go_random, load_words, permutate, prepare_words, Word, NAMES, SIX_LETTER_WORDS};
+use mmpw_gen::{go_random, permutate, prepare_words, Word, NAMES, SIX_LETTER_WORDS};
 use mmpw_validate::binstring;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use structopt::StructOpt;
+
+pub fn load_words(path: &Path) -> Vec<[u8; 6]> {
+    let text = std::fs::read_to_string(path).unwrap();
+    let words = text.split_whitespace();
+    prepare_words(words)
+}
 
 #[derive(StructOpt)]
 struct Opt {
