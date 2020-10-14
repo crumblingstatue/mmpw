@@ -316,6 +316,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "mmpw-web"
+version = "0.1.0"
+dependencies = [
+ "mmpw-gen",
+ "mmpw_validate",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "mmpw_validate"
 version = "0.1.0"
 dependencies = [

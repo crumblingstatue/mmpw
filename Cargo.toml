@@ -1,5 +1,5 @@
 [workspace]
-members = ["mmpw-validate", "mmpw-gen", "mmpw-cli"]
+members = ["mmpw-validate", "mmpw-gen", "mmpw-cli", "mmpw-web"]
 
 [profile.release]
 panic = "abort"

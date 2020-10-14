@@ -1,5 +1,5 @@
 use mmpw_gen::{go_random, permutate, prepare_words, Word, NAMES, SIX_LETTER_WORDS};
-use mmpw_validate::binstring;
+use mmpw_validate::{binstring, Password};
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
 
@@ -56,8 +56,19 @@ fn main() {
     } else {
         let mut count = 0;
         for (key, name) in key_name_pairs {
-            count += permutate(&key, words, name);
+            count += permutate(&key, words, name, show);
         }
         eprintln!("Finished. Found {} valid passwords", count);
     }
+}
+
+fn show(pw: &Password, name: &str) {
+    let utf = std::str::from_utf8(pw).unwrap();
+    println!(
+        "name: {} password: {} {} {}",
+        name,
+        &utf[0..6],
+        &utf[6..12],
+        &utf[12..]
+    );
 }

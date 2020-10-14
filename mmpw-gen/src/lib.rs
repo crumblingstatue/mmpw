@@ -19,7 +19,12 @@ fn fill_rand_words(buf: &mut Password, rng: &mut impl Rng, words: &[Word]) {
     }
 }
 
-pub fn permutate(key: &Key, words: &[Word], name: &str) -> usize {
+pub fn permutate(
+    key: &Key,
+    words: &[Word],
+    name: &str,
+    mut f: impl FnMut(&Password, &str),
+) -> usize {
     let mut s = [0; LEN as usize];
     let permutations = slice_permutations::SlicePermutations::<_, 3>::new(words);
     let mut count = 0;
@@ -28,7 +33,7 @@ pub fn permutate(key: &Key, words: &[Word], name: &str) -> usize {
         s[6..12].copy_from_slice(&b[..]);
         s[12..18].copy_from_slice(&c[..]);
         if validate(&s, key) {
-            show(&s, name);
+            f(&s, name);
             count += 1;
         }
     }
