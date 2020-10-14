@@ -299,12 +299,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "mmpw-cli"
+version = "0.1.0"
+dependencies = [
+ "mmpw-gen",
+ "mmpw_validate",
+ "structopt",
+]
+
+[[package]]
 name = "mmpw-gen"
 version = "0.1.0"
 dependencies = [
  "mmpw_validate",
  "rand",
- "structopt",
 ]
 
 [[package]]
