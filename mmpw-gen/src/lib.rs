@@ -1,5 +1,3 @@
-#![feature(min_const_generics)]
-
 use mmpw_validate::{binstring::BinString, validate, Password, LEN};
 use rand::{prelude::SliceRandom, thread_rng, Rng};
 use std::convert::TryInto;
