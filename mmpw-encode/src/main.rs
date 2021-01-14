@@ -21,7 +21,9 @@ pub fn encode(player_data: &PlayerData) -> BinString {
     let mut writer = bs.writer();
     if has_every_item {
         writer.write_int(1, 1);
-        todo!("need to write more stuff here");
+        writer.write_int(player_data.mystery_box_status as i32, 12);
+        writer.write_int(player_data.abra_bead_capacity as i32, 8);
+        writer.write_int(326, 10);
     } else {
         writer.write_int(0, 1);
         for i in 0..30 {
@@ -40,7 +42,7 @@ fn main() {
     let data = PlayerData {
         mystery_box_status: 0,
         abra_bead_capacity: 0,
-        items: [false; 30],
+        items: [true; 30],
         character_states: [0; 10],
         cash: 0,
         abra_story: 0,
