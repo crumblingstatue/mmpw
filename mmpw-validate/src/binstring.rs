@@ -136,7 +136,7 @@ impl BinString {
 
 fn binary_string_to_int(mut binstring: &[u8]) -> i32 {
     let mut result = 0;
-    while binstring.len() > 0 {
+    while !binstring.is_empty() {
         result *= 2;
         if binstring[0] == 1 {
             result += 1;
@@ -154,12 +154,12 @@ fn shuffle(mut input: Vec<u8>) -> Vec<u8> {
 
 fn one_shuffle(input: Vec<u8>, parts: usize) -> Vec<u8> {
     let mut vecs = vec![Vec::new(); parts];
-    for i in 0..input.len() {
+    for (i, &byte) in input.iter().enumerate() {
         let j = i % parts;
         if j % 2 == 0 {
-            vecs[j].insert(0, input[i]);
+            vecs[j].insert(0, byte);
         } else {
-            vecs[j].push(input[i]);
+            vecs[j].push(byte);
         }
     }
     vecs.concat()
