@@ -1,4 +1,5 @@
 use crate::array_byte_vec::ArrayByteVec;
+use std::io::Write;
 
 const fn alnum_to_bin(alnum: u8) -> u8 {
     match alnum {
@@ -54,10 +55,18 @@ const CKSUM_INTS: [u32; 100] = [
     466108725, 639641238, 486777548, 986302837,
 ];
 
+const ALPHA_CODES: [char; 32] = [
+    '3', 'H', 'G', 'F', 'R', '6', '8', 'I', 'Q', 'W', 'J', '5', 'X', 'T', 'K', 'Z', 'A', 'Y', '7',
+    'O', '9', '4', 'P', 'D', 'U', 'C', 'E', 'S', 'M', 'N', 'B', 'L',
+];
+
 #[derive(Debug)]
 pub struct BinString(ArrayByteVec<90>);
 
 impl BinString {
+    pub fn zeroed() -> Self {
+        Self(ArrayByteVec::zeroed_with_len(90))
+    }
     pub fn from_alphanumeric(alnum: &[u8]) -> Self {
         let mut vec = ArrayByteVec::<90>::zeroed_with_len(alnum.len() * 5);
         for (i, &alpha_val) in alnum.iter().enumerate() {
@@ -68,6 +77,25 @@ impl BinString {
         }
         unshuffle(&mut vec);
         Self(vec)
+    }
+    pub fn to_alphanumeric(&self, len: usize) -> String {
+        let mut result = String::new();
+        let mut tmp = self.0.to_vec();
+        while tmp.len() < len * 5 {
+            tmp.push(0);
+        }
+        tmp = shuffle(tmp);
+        dbg!(&tmp);
+        for _ in 0..len {
+            let mut binary_char = tmp[0..5].to_owned();
+            tmp = tmp[5..].to_owned();
+            binary_char.extend_from_slice(&[0; 5][0..5 - binary_char.len()]);
+            dbg!(&binary_char);
+            let binary_char_idx = binary_string_to_int(&binary_char);
+            dbg!(binary_char_idx);
+            result.push(ALPHA_CODES[binary_char_idx as usize]);
+        }
+        result
     }
     pub fn hash(&mut self, key: &BinString) {
         assert!(self.0.len() <= 90);
@@ -84,6 +112,11 @@ impl BinString {
     pub fn reader(&self) -> Reader {
         Reader { source: &self.0 }
     }
+    pub fn writer(&mut self) -> Writer {
+        Writer {
+            cursor: std::io::Cursor::new(&mut self.0),
+        }
+    }
     pub fn calc_checksum(&self) -> u32 {
         const DIGITS_TO_READ: u8 = crate::LEN * 5 - crate::CKSUM_BITS;
         const CHEKSUM_DIVISOR: u32 = 2u32.pow(crate::CKSUM_BITS as u32);
@@ -99,6 +132,37 @@ impl BinString {
         }
         checksum % CHEKSUM_DIVISOR
     }
+}
+
+fn binary_string_to_int(mut binstring: &[u8]) -> i32 {
+    let mut result = 0;
+    while binstring.len() > 0 {
+        result *= 2;
+        if binstring[0] == 1 {
+            result += 1;
+        }
+        binstring = &binstring[1..];
+    }
+    result
+}
+
+fn shuffle(mut input: Vec<u8>) -> Vec<u8> {
+    input = one_shuffle(input, 2);
+    input = one_shuffle(input, 3);
+    one_shuffle(input, 5)
+}
+
+fn one_shuffle(input: Vec<u8>, parts: usize) -> Vec<u8> {
+    let mut vecs = vec![Vec::new(); parts];
+    for i in 0..input.len() {
+        let j = i % parts;
+        if j % 2 == 0 {
+            vecs[j].insert(0, input[i]);
+        } else {
+            vecs[j].push(input[i]);
+        }
+    }
+    vecs.concat()
 }
 
 pub fn hash_name(name: &[u8]) -> BinString {
@@ -126,6 +190,31 @@ impl<'a> Reader<'a> {
     pub fn remaining(&self) -> usize {
         self.source.len()
     }
+}
+
+pub struct Writer<'a> {
+    cursor: std::io::Cursor<&'a mut [u8]>,
+}
+
+impl<'a> Writer<'a> {
+    pub fn write_int(&mut self, int: i32, n_digits: u8) {
+        self.cursor
+            .write_all(&int_to_bin_string(int, n_digits))
+            .unwrap();
+    }
+    pub fn skip(&mut self, amount: u64) {
+        let pos = self.cursor.position();
+        self.cursor.set_position(pos + amount);
+    }
+}
+
+fn int_to_bin_string(mut int: i32, n_digits: u8) -> Vec<u8> {
+    let mut result = Vec::new();
+    for _ in 0..n_digits {
+        result.insert(0, if int % 2 == 1 { 1 } else { 0 });
+        int /= 2;
+    }
+    result
 }
 
 fn hash_filter_map(key: u8) -> Option<u8> {

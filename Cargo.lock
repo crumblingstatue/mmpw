@@ -308,6 +308,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "mmpw-encode"
+version = "0.1.0"
+dependencies = [
+ "mmpw_validate",
+]
+
+[[package]]
 name = "mmpw-gen"
 version = "0.1.0"
 dependencies = [

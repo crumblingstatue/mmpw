@@ -5,7 +5,7 @@ use binstring::BinString;
 
 pub const LEN: u8 = 18;
 const PW_ITEM_COUNT: u8 = 30;
-const CKSUM_BITS: u8 = 9;
+pub const CKSUM_BITS: u8 = 9;
 
 pub type Password = [u8; LEN as usize];
 
