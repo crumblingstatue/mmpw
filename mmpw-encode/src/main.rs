@@ -4,7 +4,7 @@ pub struct PlayerData {
     mystery_box_status: u16,
     abra_bead_capacity: u8,
     items: [bool; 30],
-    character_states: [u8; 10],
+    chat_states: [u8; 10],
     cash: u32,
     abra_story: u8,
     final_trial_count: u8,
@@ -30,7 +30,23 @@ pub fn encode(player_data: &PlayerData) -> BinString {
             writer.write_int(if player_data.items[i] { 1 } else { 0 }, 1);
         }
     }
-    writer.skip(22 + 19 + 6 + 2);
+    writer.write_int(player_data.chat_states[0] as i32, 2);
+    writer.write_int(player_data.chat_states[1] as i32, 3);
+    writer.write_int(player_data.chat_states[2] as i32, 2);
+    writer.write_int(player_data.chat_states[3] as i32, 2);
+    writer.write_int(player_data.chat_states[4] as i32, 3);
+    writer.write_int(player_data.chat_states[5] as i32, 2);
+    writer.write_int(player_data.chat_states[6] as i32, 2);
+    writer.write_int(player_data.chat_states[7] as i32, 2);
+    writer.write_int(player_data.chat_states[8] as i32, 2);
+    writer.write_int(player_data.chat_states[9] as i32, 2);
+    writer.write_int(player_data.cash as i32, 6);
+    writer.write_int(player_data.abra_story as i32, 3);
+    writer.write_int(player_data.final_trial_count as i32, 3);
+    writer.write_int(player_data.rank as i32, 7);
+    writer.write_int(player_data.time_played as i32, 6);
+    writer.write_int(if player_data.five_peg { 1 } else { 0 }, 1);
+    writer.write_int(if player_data.seven_peg { 1 } else { 0 }, 1);
     let checksum = bs.calc_checksum();
     let mut writer = bs.writer();
     writer.skip(81);
@@ -40,17 +56,17 @@ pub fn encode(player_data: &PlayerData) -> BinString {
 
 fn main() {
     let data = PlayerData {
-        mystery_box_status: 0,
-        abra_bead_capacity: 0,
+        mystery_box_status: 60,
+        abra_bead_capacity: 6,
         items: [true; 30],
-        character_states: [0; 10],
-        cash: 0,
+        chat_states: [2; 10],
+        cash: 999999,
         abra_story: 0,
         final_trial_count: 0,
-        rank: 0,
+        rank: 50,
         time_played: 0,
-        five_peg: false,
-        seven_peg: false,
+        five_peg: true,
+        seven_peg: true,
     };
     let mut s = encode(&data);
     println!("{}", s.to_alphanumeric(18));
