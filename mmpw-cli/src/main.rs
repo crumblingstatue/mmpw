@@ -42,8 +42,7 @@ fn main() {
         }
     };
 
-    let mut key_name_pairs = Vec::new();
-    key_name_pairs.push((binstring::hash_name(opt.name.as_bytes()), &opt.name[..]));
+    let mut key_name_pairs = vec![(binstring::hash_name(opt.name.as_bytes()), &opt.name[..])];
 
     if opt.brute_force_with_names {
         for name in NAMES.iter() {
