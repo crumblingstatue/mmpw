@@ -60,12 +60,15 @@ const ALPHA_CODES: [char; 32] = [
     'O', '9', '4', 'P', 'D', 'U', 'C', 'E', 'S', 'M', 'N', 'B', 'L',
 ];
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct BinString(ArrayByteVec<90>);
 
 impl BinString {
     pub fn zeroed() -> Self {
         Self(ArrayByteVec::zeroed_with_len(90))
+    }
+    pub fn from_raw(raw: [u8; 90]) -> Self {
+        Self(ArrayByteVec::from_raw(raw, 90))
     }
     pub fn from_alphanumeric(alnum: &[u8]) -> Self {
         let mut vec = ArrayByteVec::<90>::zeroed_with_len(alnum.len() * 5);
@@ -85,14 +88,11 @@ impl BinString {
             tmp.push(0);
         }
         tmp = shuffle(tmp);
-        dbg!(&tmp);
         for _ in 0..len {
             let mut binary_char = tmp[0..5].to_owned();
             tmp = tmp[5..].to_owned();
             binary_char.extend_from_slice(&[0; 5][0..5 - binary_char.len()]);
-            dbg!(&binary_char);
             let binary_char_idx = binary_string_to_int(&binary_char);
-            dbg!(binary_char_idx);
             result.push(ALPHA_CODES[binary_char_idx as usize]);
         }
         result

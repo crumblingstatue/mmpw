@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut, Index, IndexMut};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct ArrayByteVec<const N: usize> {
     array: [u8; N],
     len: usize,
@@ -9,6 +9,9 @@ pub struct ArrayByteVec<const N: usize> {
 impl<const N: usize> ArrayByteVec<N> {
     pub fn zeroed_with_len(len: usize) -> Self {
         Self { array: [0; N], len }
+    }
+    pub fn from_raw(raw: [u8; N], len: usize) -> Self {
+        Self { array: raw, len }
     }
     pub fn insert(&mut self, index: usize, value: u8) {
         assert!(self.len < N);

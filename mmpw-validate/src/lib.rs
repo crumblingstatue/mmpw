@@ -12,6 +12,10 @@ pub type Password = [u8; LEN as usize];
 pub fn validate(pw: &Password, key: &BinString) -> bool {
     let mut bs = BinString::from_alphanumeric(pw);
     bs.hash(key);
+    validate_bin(&bs)
+}
+
+pub fn validate_bin(bs: &BinString) -> bool {
     let mut reader = bs.reader();
     if reader.next_int(1) == 1 {
         reader.advance(12 + 8);
@@ -47,4 +51,24 @@ fn test_validate() {
     assert_eq!(validate(b"DEOXYSCOITALABLAZE", &key), true);
     assert_eq!(validate(b"NICKITUPWARDPLIANT", &key), true);
     assert_eq!(validate(b"BLOBBYBIDOOFNEGATE", &key), true);
+    assert_eq!(validate(b"NIYB8BINC8O98PGYKK", &key), true);
+    assert_eq!(validate(b"NICBRBINC8O4PKGOZK", &key), true);
+}
+
+#[test]
+fn test_validate_bin() {
+    // NICBRBINC8O4PKGOZK
+    let arr = [
+        1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0,
+        1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1,
+        1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0,
+    ];
+    // test equivalence
+    let mut bs2 = BinString::from_alphanumeric(b"NICBRBINC8O4PKGOZK");
+    let mut bs = BinString::from_raw(arr);
+    assert_eq!(bs, bs2);
+    bs2.hash(&binstring::hash_name(b"DEW"));
+    bs.hash(&binstring::hash_name(b"DEW"));
+    assert_eq!(validate_bin(&bs2), true);
+    assert_eq!(validate_bin(&bs), true);
 }
