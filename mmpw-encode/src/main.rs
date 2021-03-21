@@ -203,13 +203,17 @@ fn main() {
     all_items_pak.end();
     all_items_pak.deactivate();
     // Generate button + output
-    let mut button = Button::default();
-    button.set_label("generate");
-    button.set_size(0, 40);
+    let mut pack2 = Pack::default().with_size(0, 40);
+    pack2.set_type(PackType::Horizontal);
+    pack2.set_spacing(16);
     let mut out = Output::default();
     out.set_label("Password");
-    out.set_size(0, 32);
+    out.set_size(200, 0);
+    let mut button = Button::default();
+    button.set_label("Generate");
+    button.set_size(80, 0);
     button.emit(s, Msg::GenerateClicked);
+    pack2.end();
     pack.end();
     wind.end();
     wind.show();
