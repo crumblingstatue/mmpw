@@ -157,17 +157,18 @@ fn main() {
     money_rounded.set_precision(0);
     pack2.end();
     money_inp.emit(s, Msg::MoneyInpChanged);
-    let mut rank_inp = bounded_int_input("Puzzle rank", 0, 65);
-    rank_inp.emit(s, Msg::RankInpChanged);
-    let mut pack2 = Pack::default().with_size(0, 16);
+    let mut pack2 = Pack::default().with_size(0, 32);
     pack2.set_spacing(8);
     pack2.set_type(PackType::Horizontal);
+    let mut rank_inp = bounded_int_input("Puzzle rank", 0, 65);
+    rank_inp.set_size(40, 0);
+    rank_inp.emit(s, Msg::RankInpChanged);
     let five_pin_chk = CheckButton::default()
-        .with_size(200, 0)
-        .with_label("Five peg puzzles unlocked");
+        .with_size(150, 0)
+        .with_label("5 peg unlocked");
     let seven_pin_chk = CheckButton::default()
-        .with_size(200, 0)
-        .with_label("Seven peg puzzles unlocked");
+        .with_size(150, 0)
+        .with_label("7 peg unlocked");
     pack2.end();
     let mut pack2 = Pack::default();
     pack2.end();
