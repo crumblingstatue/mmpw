@@ -122,9 +122,18 @@ fn bounded_int_input(label: &str, min: i32, max: i32) -> ValueInput {
 #[derive(Clone, Copy)]
 enum Msg {
     MoneyInpChanged,
+    RankInpChanged,
+    MysteryBoxInpChanged,
+    AbraBeadInpChanged,
     GenerateClicked,
     ItemClicked,
     AllItemsClicked,
+}
+
+fn clamp_valuator(w: &mut impl ValuatorExt) {
+    let val = w.value();
+    let clamped = w.clamp(val);
+    w.set_value(clamped);
 }
 
 fn main() {
@@ -148,7 +157,8 @@ fn main() {
     money_rounded.set_precision(0);
     pack2.end();
     money_inp.emit(s, Msg::MoneyInpChanged);
-    let rank_inp = bounded_int_input("Puzzle rank", 0, 65);
+    let mut rank_inp = bounded_int_input("Puzzle rank", 0, 65);
+    rank_inp.emit(s, Msg::RankInpChanged);
     let mut pack2 = Pack::default().with_size(0, 16);
     pack2.set_spacing(8);
     pack2.set_type(PackType::Horizontal);
@@ -185,8 +195,10 @@ fn main() {
     let mut all_items_pak = Pack::default().with_size(0, 32);
     all_items_pak.set_spacing(200);
     all_items_pak.set_type(PackType::Horizontal);
-    let mystery_box_inp = bounded_int_input("Myst. boxes bought", 0, 9999);
-    let abra_bead_inp = bounded_int_input("Abra bead capacity", 0, 255);
+    let mut mystery_box_inp = bounded_int_input("Myst. boxes bought", 0, 9999);
+    mystery_box_inp.emit(s, Msg::MysteryBoxInpChanged);
+    let mut abra_bead_inp = bounded_int_input("Abra bead capacity", 0, 255);
+    abra_bead_inp.emit(s, Msg::AbraBeadInpChanged);
     all_items_pak.end();
     all_items_pak.deactivate();
     // Generate button + output
@@ -216,10 +228,14 @@ fn main() {
             }
             match msg {
                 Msg::MoneyInpChanged => {
+                    clamp_valuator(&mut money_inp);
                     let val = money_inp.value();
                     cash_index_val = cash_index(val as u32);
                     money_rounded.set_value(PASSWORD_CASH[cash_index_val] as f64);
                 }
+                Msg::RankInpChanged => clamp_valuator(&mut rank_inp),
+                Msg::MysteryBoxInpChanged => clamp_valuator(&mut mystery_box_inp),
+                Msg::AbraBeadInpChanged => clamp_valuator(&mut abra_bead_inp),
                 Msg::GenerateClicked => {
                     let mut items = [false; 30];
                     for (i, b) in buttons.iter().enumerate() {
