@@ -209,9 +209,9 @@ fn main() {
     let mut out = Output::default();
     out.set_label("Password");
     out.set_size(200, 0);
-    let mut button = Button::default();
+    let mut button = ReturnButton::default();
     button.set_label("Generate");
-    button.set_size(80, 0);
+    button.set_size(110, 0);
     button.emit(s, Msg::GenerateClicked);
     pack2.end();
     pack.end();
