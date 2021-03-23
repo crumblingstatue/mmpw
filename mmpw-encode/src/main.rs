@@ -157,7 +157,7 @@ fn main() {
     let app = app::App::default();
     let (s, r) = app::channel::<Msg>();
     let mut wind =
-        Window::new(0, 0, 640, 480, "Monster Mind Password Generator v0.1").center_screen();
+        Window::new(0, 0, 640, 480, "Monster Mind Password Generator v0.2").center_screen();
     let tabs = Tabs::new(0, 0, 640, 640, "TABS");
     // region: Basic tab
     let gr_basic = Group::new(0, 30, 600, 600, "Basic");
