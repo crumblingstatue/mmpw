@@ -15,6 +15,32 @@ const PASSWORD_TIME_PLAYED: [u32; 64] = [
     208450, 239720, 275670, 317020, 364580, 419260, 482150, 554480, 637650, 733300, 843290, 969780,
     1115250, 1282540, 1474920, 1696160, 1950580, 2243170, 2579650, 2966590, 3600000,
 ];
+
+fn difference(a: u32, b: u32) -> u32 {
+    let bigger = a.max(b);
+    let smaller = a.min(b);
+    bigger - smaller
+}
+
+/// Find the closest match in a sorted set (increasing order)
+fn find_closest_match(item: u32, set: &[u32; 64]) -> usize {
+    let mut bigger_idx = set
+        .iter()
+        .position(|&set_item| set_item > item)
+        .unwrap_or(set.len());
+    let smaller_idx = bigger_idx - 1;
+    if bigger_idx == set.len() {
+        bigger_idx -= 1;
+    }
+    let bigger_diff = difference(set[bigger_idx], item);
+    let smaller_diff = difference(set[smaller_idx], item);
+    if bigger_diff < smaller_diff {
+        bigger_idx
+    } else {
+        smaller_idx
+    }
+}
+
 const ITEM_NAMES: [&str; 30] = [
     "Cornstarch Cookies",
     "Graphing Calculator",
@@ -60,16 +86,6 @@ pub struct PlayerData {
     time_played: u32,
     five_peg: bool,
     seven_peg: bool,
-}
-
-fn cash_index(cash: u32) -> usize {
-    let mut idx = 0;
-    (1..PASSWORD_CASH.len()).for_each(|i| {
-        if cash >= PASSWORD_CASH[i] - 50 {
-            idx = i;
-        }
-    });
-    idx
 }
 
 pub fn encode(player_data: &PlayerData) -> BinString {
@@ -128,6 +144,7 @@ enum Msg {
     GenerateClicked,
     ItemClicked,
     AllItemsClicked,
+    TimePlayedChanged,
 }
 
 fn clamp_valuator(w: &mut impl ValuatorExt) {
@@ -140,17 +157,20 @@ fn main() {
     let app = app::App::default();
     let (s, r) = app::channel::<Msg>();
     let mut wind =
-        Window::new(0, 0, 640, 640, "Monster Mind Password Generator v0.1").center_screen();
+        Window::new(0, 0, 640, 480, "Monster Mind Password Generator v0.1").center_screen();
+    let tabs = Tabs::new(0, 0, 640, 640, "TABS");
+    // region: Basic tab
+    let gr_basic = Group::new(0, 30, 600, 600, "Basic");
     let mut pack = Pack::default()
         .with_size(wind.w() - 170, wind.h())
-        .with_pos(150, 0);
+        .with_pos(150, 32);
     pack.set_spacing(8);
     let mut name_inp = Input::default().with_label("Name").with_size(0, 32);
     name_inp.set_maximum_size(17);
     let mut pack2 = Pack::default().with_size(0, 32);
     pack2.set_type(PackType::Horizontal);
     pack2.set_spacing(100);
-    let mut money_inp = bounded_int_input("Cash", 0, 2_000_000);
+    let mut money_inp = bounded_int_input("Cash", 0, PASSWORD_CASH[63] as i32);
     let mut money_rounded = ValueOutput::default()
         .with_label("Rounded")
         .with_size(200, 40);
@@ -170,6 +190,29 @@ fn main() {
         .with_size(150, 0)
         .with_label("7 peg unlocked");
     pack2.end();
+    let mut pack2 = Pack::default().with_size(0, 32);
+    pack2.set_type(PackType::Horizontal);
+    pack2.set_spacing(80);
+    let mut time_played_h_inp = bounded_int_input("Time played h:", 0, 999);
+    time_played_h_inp.set_size(40, 0);
+    time_played_h_inp.emit(s, Msg::TimePlayedChanged);
+    let mut time_played_m_inp = bounded_int_input("m:", 0, 59);
+    time_played_m_inp.set_size(32, 0);
+    time_played_m_inp.emit(s, Msg::TimePlayedChanged);
+    let mut time_played_s_inp = bounded_int_input("s:", 0, 59);
+    time_played_s_inp.set_size(32, 0);
+    time_played_s_inp.emit(s, Msg::TimePlayedChanged);
+    let rounded_out = Output::default().with_label("Rounded:").with_size(100, 0);
+    pack2.end();
+    pack.end();
+    gr_basic.end();
+    // endregion
+    // region: Items tab
+    let gr_items = Group::new(0, 30, 600, 600, "Items");
+    let mut pack = Pack::default()
+        .with_size(wind.w() - 170, wind.h())
+        .with_pos(150, 32);
+    pack.set_spacing(8);
     let mut pack2 = Pack::default();
     pack2.end();
     let mut buttons = Vec::new();
@@ -188,22 +231,35 @@ fn main() {
         }
     }
     pack2.end();
-    // All items, stuff that depends on it
     let mut all_items_chk = CheckButton::default()
         .with_label("Got all items")
         .with_size(0, 32);
     all_items_chk.emit(s, Msg::AllItemsClicked);
-    let mut all_items_pak = Pack::default().with_size(0, 32);
-    all_items_pak.set_spacing(200);
-    all_items_pak.set_type(PackType::Horizontal);
     let mut mystery_box_inp = bounded_int_input("Myst. boxes bought", 0, 9999);
     mystery_box_inp.emit(s, Msg::MysteryBoxInpChanged);
+    mystery_box_inp.deactivate();
+    pack.end();
+    gr_items.end();
+    // endregion
+    // region: Story tab
+    let gr_story = Group::new(0, 30, 600, 600, "Story");
+    gr_story.end();
+    // endregion
+    // region: Misc tab
+    let gr_misc = Group::new(0, 30, 600, 600, "Misc");
+    let mut pack = Pack::default()
+        .with_size(wind.w() - 170, wind.h())
+        .with_pos(150, 32);
+    pack.set_spacing(8);
     let mut abra_bead_inp = bounded_int_input("Abra bead capacity", 0, 255);
     abra_bead_inp.emit(s, Msg::AbraBeadInpChanged);
-    all_items_pak.end();
-    all_items_pak.deactivate();
+    abra_bead_inp.deactivate();
+    pack.end();
+    gr_misc.end();
+    // endregion
+    tabs.end();
     // Generate button + output
-    let mut pack2 = Pack::default().with_size(0, 40);
+    let mut pack2 = Pack::new(200, 440, 640, 32, "");
     pack2.set_type(PackType::Horizontal);
     pack2.set_spacing(16);
     let mut out = Output::default();
@@ -214,19 +270,21 @@ fn main() {
     button.set_size(110, 0);
     button.emit(s, Msg::GenerateClicked);
     pack2.end();
-    pack.end();
     wind.end();
     wind.show();
     let mut cash_index_val = 0;
+    let mut time_index_val = 0;
     while app.wait() {
         if let Some(msg) = r.recv() {
             macro_rules! item_change_routine {
                 () => {{
                     let all = buttons.iter().all(|b| b.is_checked());
                     if all {
-                        all_items_pak.activate();
+                        mystery_box_inp.activate();
+                        abra_bead_inp.activate();
                     } else {
-                        all_items_pak.deactivate();
+                        mystery_box_inp.deactivate();
+                        abra_bead_inp.deactivate();
                     }
                     all
                 }};
@@ -235,8 +293,9 @@ fn main() {
                 Msg::MoneyInpChanged => {
                     clamp_valuator(&mut money_inp);
                     let val = money_inp.value();
-                    cash_index_val = cash_index(val as u32);
-                    money_rounded.set_value(PASSWORD_CASH[cash_index_val] as f64);
+                    cash_index_val = find_closest_match(val as u32, &PASSWORD_CASH);
+                    let rounded = PASSWORD_CASH[cash_index_val];
+                    money_rounded.set_value(rounded as f64);
                 }
                 Msg::RankInpChanged => clamp_valuator(&mut rank_inp),
                 Msg::MysteryBoxInpChanged => clamp_valuator(&mut mystery_box_inp),
@@ -255,7 +314,7 @@ fn main() {
                         abra_story: 0,
                         final_trial_count: 0,
                         rank: rank_inp.value() as u8,
-                        time_played: 0,
+                        time_played: time_index_val as u32,
                         five_peg: five_pin_chk.is_checked(),
                         seven_peg: seven_pin_chk.is_checked(),
                     };
@@ -282,6 +341,18 @@ fn main() {
                         b.set_checked(checked);
                     }
                     item_change_routine!();
+                }
+                Msg::TimePlayedChanged => {
+                    let h = time_played_h_inp.value() as u32;
+                    let m = time_played_m_inp.value() as u32;
+                    let s = time_played_s_inp.value() as u32;
+                    let seconds_total = h * 3600 + m * 60 + s;
+                    time_index_val = find_closest_match(seconds_total, &PASSWORD_TIME_PLAYED);
+                    let rounded_secs = PASSWORD_TIME_PLAYED[time_index_val];
+                    let hours = rounded_secs / 3600;
+                    let mins = (rounded_secs % 3600) / 60;
+                    let secs = rounded_secs % 60;
+                    rounded_out.set_value(&format!("{:02}:{:02}:{:02}", hours, mins, secs));
                 }
             }
         }
