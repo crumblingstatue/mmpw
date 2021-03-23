@@ -1,4 +1,4 @@
-use fltk::{app, button::*, group::*, input::*, output::*, valuator::*, window::*};
+use fltk::{app, button::*, group::*, input::*, menu::*, output::*, valuator::*, window::*};
 use mmpw_validate::binstring::BinString;
 
 const PASSWORD_CASH: [u32; 64] = [
@@ -243,6 +243,82 @@ fn main() {
     // endregion
     // region: Story tab
     let gr_story = Group::new(0, 30, 600, 600, "Story");
+    let mut pack = Pack::default()
+        .with_size(wind.w() - 170, wind.h())
+        .with_pos(150, 32);
+    pack.set_spacing(6);
+    let mut story_choice = Choice::default().with_size(0, 30).with_label("Main story");
+    story_choice.add_choice("Beginning");
+    story_choice.add_choice("Stage 1");
+    story_choice.add_choice("Stage 2");
+    story_choice.add_choice("Stage 3");
+    story_choice.add_choice("Stage 4");
+    story_choice.add_choice("Swap ending");
+    story_choice.add_choice("No swap ending");
+    story_choice.set_value(0);
+    let mut abra_choice = Choice::default().with_size(0, 30).with_label("Abra");
+    abra_choice.add_choice("Beginning");
+    abra_choice.add_choice("Stage 1");
+    abra_choice.add_choice("Stage 2");
+    abra_choice.add_choice("Stage 3");
+    abra_choice.set_value(0);
+    let mut buiz_choice = Choice::default().with_size(0, 30).with_label("Buizel");
+    buiz_choice.add_choice("Beginning");
+    buiz_choice.add_choice("Stage 1");
+    buiz_choice.add_choice("Stage 2");
+    buiz_choice.add_choice("Stage 3");
+    buiz_choice.add_choice("Stage 4");
+    buiz_choice.set_value(0);
+    let mut hera_choice = Choice::default().with_size(0, 30).with_label("Heracross");
+    hera_choice.add_choice("Beginning");
+    hera_choice.add_choice("Stage 1");
+    hera_choice.add_choice("Stage 2");
+    hera_choice.add_choice("Stage 3");
+    hera_choice.set_value(0);
+    let mut grov_choice = Choice::default().with_size(0, 30).with_label("Grovyle");
+    grov_choice.add_choice("Beginning");
+    grov_choice.add_choice("Stage 1");
+    grov_choice.add_choice("Stage 2");
+    grov_choice.add_choice("Stage 3");
+    grov_choice.set_value(0);
+    let mut sand_choice = Choice::default().with_size(0, 30).with_label("Sandslash");
+    sand_choice.add_choice("Beginning");
+    sand_choice.add_choice("Stage 1");
+    sand_choice.add_choice("Stage 2");
+    sand_choice.add_choice("Stage 3");
+    sand_choice.add_choice("Stage 4");
+    sand_choice.set_value(0);
+    let mut rhyd_choice = Choice::default().with_size(0, 30).with_label("Rhydon");
+    rhyd_choice.add_choice("Beginning");
+    rhyd_choice.add_choice("Stage 1");
+    rhyd_choice.add_choice("Stage 2");
+    rhyd_choice.add_choice("Stage 3");
+    rhyd_choice.set_value(0);
+    let mut smea_choice = Choice::default().with_size(0, 30).with_label("Smeargle");
+    smea_choice.add_choice("Beginning");
+    smea_choice.add_choice("Stage 1");
+    smea_choice.add_choice("Stage 2");
+    smea_choice.add_choice("Stage 3");
+    smea_choice.set_value(0);
+    let mut magn_choice = Choice::default().with_size(0, 30).with_label("Magnezone");
+    magn_choice.add_choice("Beginning");
+    magn_choice.add_choice("Stage 1");
+    magn_choice.add_choice("Stage 2");
+    magn_choice.add_choice("Stage 3");
+    magn_choice.set_value(0);
+    let mut grim_choice = Choice::default().with_size(0, 30).with_label("Grimer");
+    grim_choice.add_choice("Beginning");
+    grim_choice.add_choice("Stage 1");
+    grim_choice.add_choice("Stage 2");
+    grim_choice.add_choice("Stage 3");
+    grim_choice.set_value(0);
+    let mut luca_choice = Choice::default().with_size(0, 30).with_label("Lucario");
+    luca_choice.add_choice("Beginning");
+    luca_choice.add_choice("Stage 1");
+    luca_choice.add_choice("Stage 2");
+    luca_choice.add_choice("Stage 3");
+    luca_choice.set_value(0);
+    pack.end();
     gr_story.end();
     // endregion
     // region: Misc tab
@@ -305,19 +381,35 @@ fn main() {
                     for (i, b) in buttons.iter().enumerate() {
                         items[i] = b.is_checked();
                     }
-                    let player_data = PlayerData {
+                    let mut player_data = PlayerData {
                         mystery_box_status: mystery_box_inp.value() as u16,
                         abra_bead_capacity: abra_bead_inp.value() as u8,
                         items,
-                        chat_states: [2; 10],
+                        chat_states: [0; 10],
                         cash: cash_index_val as u32,
-                        abra_story: 0,
+                        abra_story: story_choice.value() as u8,
                         final_trial_count: 0,
                         rank: rank_inp.value() as u8,
                         time_played: time_index_val as u32,
                         five_peg: five_pin_chk.is_checked(),
                         seven_peg: seven_pin_chk.is_checked(),
                     };
+                    for (i, ch) in std::array::IntoIter::new([
+                        &abra_choice,
+                        &buiz_choice,
+                        &hera_choice,
+                        &grov_choice,
+                        &sand_choice,
+                        &rhyd_choice,
+                        &smea_choice,
+                        &magn_choice,
+                        &grim_choice,
+                        &luca_choice,
+                    ])
+                    .enumerate()
+                    {
+                        player_data.chat_states[i] = ch.value() as u8;
+                    }
                     let pw = encode(&player_data);
                     if mmpw_validate::validate_bin(&pw) {
                         let pw = pretty_print_password(&pw, &name_inp.value());
