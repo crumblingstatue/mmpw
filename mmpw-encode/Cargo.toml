@@ -10,4 +10,4 @@ edition = "2018"
 path = "../mmpw-validate"
 
 [dependencies]
-fltk = "0.15.12"
+fltk = "0.16.2"
