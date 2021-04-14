@@ -1,4 +1,6 @@
-use fltk::{app, button::*, group::*, input::*, menu::*, output::*, valuator::*, window::*};
+use fltk::{
+    app, button::*, frame::Frame, group::*, input::*, menu::*, output::*, valuator::*, window::*,
+};
 use mmpw_validate::binstring::BinString;
 
 const PASSWORD_CASH: [u32; 64] = [
@@ -153,6 +155,12 @@ fn clamp_valuator(w: &mut impl ValuatorExt) {
     w.set_value(clamped);
 }
 
+/// Add space into a pack/group/whatever. Just creates a Frame, because
+/// I couldn't figure out a better way.
+fn space(width: i32, height: i32) -> Frame {
+    Frame::new(0, 0, width, height, "")
+}
+
 fn main() {
     let app = app::App::default();
     let (s, r) = app::channel::<Msg>();
@@ -189,17 +197,23 @@ fn main() {
     pack2.end();
     let mut pack2 = Pack::default().with_size(0, 32);
     pack2.set_type(PackType::Horizontal);
-    pack2.set_spacing(80);
-    let mut time_played_h_inp = bounded_int_input("Time played h:", 0, 999);
+    pack2.set_spacing(32);
+    pack2.set_label("Time played");
+    pack2.set_align(Align::Left);
+    let mut time_played_h_inp = bounded_int_input("h", 0, 999);
+    time_played_h_inp.set_align(Align::Right);
     time_played_h_inp.set_size(40, 0);
     time_played_h_inp.emit(s, Msg::TimePlayedChanged);
-    let mut time_played_m_inp = bounded_int_input("m:", 0, 59);
+    let mut time_played_m_inp = bounded_int_input("m", 0, 59);
+    time_played_m_inp.set_align(Align::Right);
     time_played_m_inp.set_size(32, 0);
     time_played_m_inp.emit(s, Msg::TimePlayedChanged);
-    let mut time_played_s_inp = bounded_int_input("s:", 0, 59);
+    let mut time_played_s_inp = bounded_int_input("s", 0, 59);
+    time_played_s_inp.set_align(Align::Right);
     time_played_s_inp.set_size(32, 0);
     time_played_s_inp.emit(s, Msg::TimePlayedChanged);
-    let rounded_out = Output::default().with_label("Rounded:").with_size(100, 0);
+    space(32, 0);
+    let rounded_out = Output::default().with_label("Rounded:").with_size(90, 0);
     pack2.end();
     pack.end();
     gr_basic.end();
