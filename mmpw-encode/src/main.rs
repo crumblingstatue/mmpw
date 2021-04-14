@@ -194,10 +194,10 @@ fn main() {
     rank_inp.set_size(32, 0);
     rank_inp.emit(s, Msg::RankInpChanged);
     let five_pin_chk = CheckButton::default()
-        .with_size(150, 0)
+        .with_size(130, 0)
         .with_label("5 peg unlocked");
     let seven_pin_chk = CheckButton::default()
-        .with_size(150, 0)
+        .with_size(130, 0)
         .with_label("7 peg unlocked");
     pack2.end();
     let mut pack2 = Pack::default().with_size(0, 32);
@@ -235,7 +235,7 @@ fn main() {
     for (i, &name) in ITEM_NAMES.iter().enumerate() {
         let cond = i % 2 == 0;
         if cond {
-            pack2 = Pack::default().with_size(0, 12);
+            pack2 = Pack::default().with_size(0, 16);
             pack2.set_spacing(4);
             pack2.set_type(PackType::Horizontal);
         }
