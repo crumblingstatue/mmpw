@@ -131,7 +131,8 @@ pub fn encode(player_data: &PlayerData) -> BinString {
 }
 
 fn bounded_int_input(label: &str, min: i32, max: i32) -> ValueInput {
-    let mut inp = ValueInput::default().with_label(label).with_size(100, 32);
+    // Make default size very tiny so we know size wasn't explicitly set
+    let mut inp = ValueInput::default().with_label(label).with_size(16, 16);
     inp.set_precision(0);
     inp.set_bounds(min as f64, max as f64);
     inp
@@ -177,9 +178,10 @@ fn main() {
     name_inp.set_maximum_size(17);
     let mut pack2 = Pack::default().with_size(0, 32);
     pack2.set_type(PackType::Horizontal);
-    pack2.set_spacing(100);
     let mut money_inp = bounded_int_input("Cash", 0, PASSWORD_CASH[63] as i32);
-    let money_rounded = Output::default().with_label("Rounded").with_size(200, 40);
+    money_inp.set_size(80, 0);
+    space(80, 0);
+    let money_rounded = Output::default().with_label("Rounded").with_size(80, 40);
     pack2.end();
     money_inp.emit(s, Msg::MoneyInpChanged);
     let mut pack2 = Pack::default().with_size(0, 32);
@@ -247,6 +249,7 @@ fn main() {
         .with_size(0, 32);
     all_items_chk.emit(s, Msg::AllItemsClicked);
     let mut mystery_box_inp = bounded_int_input("Myst. boxes bought", 0, 9999);
+    mystery_box_inp.set_size(0, 32);
     mystery_box_inp.emit(s, Msg::MysteryBoxInpChanged);
     mystery_box_inp.deactivate();
     pack.end();
@@ -339,6 +342,7 @@ fn main() {
         .with_pos(150, 32);
     pack.set_spacing(8);
     let mut abra_bead_inp = bounded_int_input("Abra bead capacity", 0, 255);
+    abra_bead_inp.set_size(0, 32);
     abra_bead_inp.emit(s, Msg::AbraBeadInpChanged);
     abra_bead_inp.deactivate();
     pack.end();
