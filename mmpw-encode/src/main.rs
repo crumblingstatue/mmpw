@@ -166,13 +166,13 @@ fn main() {
     let app = app::App::default();
     let (s, r) = app::channel::<Msg>();
     let mut wind =
-        Window::new(0, 0, 640, 480, "Monster Mind Password Generator v0.2").center_screen();
-    let tabs = Tabs::new(0, 0, 640, 640, "TABS");
+        Window::new(0, 0, 480, 480, "Monster Mind Password Generator v0.2").center_screen();
+    let tabs = Tabs::new(0, 0, wind.w(), wind.h(), "TABS");
     // region: Basic tab
-    let gr_basic = Group::new(0, 30, 600, 600, "Basic");
+    let gr_basic = Group::new(0, 30, tabs.w(), tabs.h(), "Basic");
     let mut pack = Pack::default()
         .with_size(wind.w() - 170, wind.h())
-        .with_pos(150, 32);
+        .with_pos(100, 32);
     pack.set_spacing(8);
     let mut name_inp = Input::default().with_label("Name").with_size(0, 32);
     name_inp.set_maximum_size(17);
@@ -221,10 +221,10 @@ fn main() {
     gr_basic.end();
     // endregion
     // region: Items tab
-    let gr_items = Group::new(0, 30, 600, 600, "Items");
+    let gr_items = Group::new(0, 30, tabs.w(), tabs.h(), "Items");
     let mut pack = Pack::default()
         .with_size(wind.w() - 170, wind.h())
-        .with_pos(150, 32);
+        .with_pos(60, 32);
     pack.set_spacing(8);
     let mut pack2 = Pack::default();
     pack2.end();
@@ -248,18 +248,14 @@ fn main() {
         .with_label("Got all items")
         .with_size(0, 32);
     all_items_chk.emit(s, Msg::AllItemsClicked);
-    let mut mystery_box_inp = bounded_int_input("Myst. boxes bought", 0, 9999);
-    mystery_box_inp.set_size(0, 32);
-    mystery_box_inp.emit(s, Msg::MysteryBoxInpChanged);
-    mystery_box_inp.deactivate();
     pack.end();
     gr_items.end();
     // endregion
     // region: Story tab
-    let gr_story = Group::new(0, 30, 600, 600, "Story");
+    let gr_story = Group::new(0, 30, tabs.w(), tabs.h(), "Story");
     let mut pack = Pack::default()
         .with_size(wind.w() - 170, wind.h())
-        .with_pos(150, 32);
+        .with_pos(100, 32);
     pack.set_spacing(6);
     let mut story_choice = Choice::default().with_size(0, 30).with_label("Main story");
     story_choice.add_choice("Beginning");
@@ -338,9 +334,13 @@ fn main() {
     // region: Misc tab
     let gr_misc = Group::new(0, 30, 600, 600, "Misc");
     let mut pack = Pack::default()
-        .with_size(wind.w() - 170, wind.h())
-        .with_pos(150, 32);
+        .with_size(wind.w() - 400, wind.h())
+        .with_pos(180, 32);
     pack.set_spacing(8);
+    let mut mystery_box_inp = bounded_int_input("Mystery boxes bought", 0, 9999);
+    mystery_box_inp.set_size(0, 32);
+    mystery_box_inp.emit(s, Msg::MysteryBoxInpChanged);
+    mystery_box_inp.deactivate();
     let mut abra_bead_inp = bounded_int_input("Abra bead capacity", 0, 255);
     abra_bead_inp.set_size(0, 32);
     abra_bead_inp.emit(s, Msg::AbraBeadInpChanged);
@@ -350,7 +350,7 @@ fn main() {
     // endregion
     tabs.end();
     // Generate button + output
-    let mut pack2 = Pack::new(200, 440, 640, 32, "");
+    let mut pack2 = Pack::new(110, 440, 640, 32, "");
     pack2.set_type(PackType::Horizontal);
     pack2.set_spacing(16);
     let mut out = Output::default();
