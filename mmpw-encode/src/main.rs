@@ -171,10 +171,7 @@ fn main() {
     pack2.set_type(PackType::Horizontal);
     pack2.set_spacing(100);
     let mut money_inp = bounded_int_input("Cash", 0, PASSWORD_CASH[63] as i32);
-    let mut money_rounded = ValueOutput::default()
-        .with_label("Rounded")
-        .with_size(200, 40);
-    money_rounded.set_precision(0);
+    let money_rounded = Output::default().with_label("Rounded").with_size(200, 40);
     pack2.end();
     money_inp.emit(s, Msg::MoneyInpChanged);
     let mut pack2 = Pack::default().with_size(0, 32);
@@ -371,7 +368,7 @@ fn main() {
                     let val = money_inp.value();
                     cash_index_val = find_closest_match(val as u32, &PASSWORD_CASH);
                     let rounded = PASSWORD_CASH[cash_index_val];
-                    money_rounded.set_value(rounded as f64);
+                    money_rounded.set_value(&rounded.to_string());
                 }
                 Msg::RankInpChanged => clamp_valuator(&mut rank_inp),
                 Msg::MysteryBoxInpChanged => clamp_valuator(&mut mystery_box_inp),
