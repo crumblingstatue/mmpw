@@ -181,7 +181,7 @@ fn main() {
     pack2.set_spacing(8);
     pack2.set_type(PackType::Horizontal);
     let mut rank_inp = bounded_int_input("Puzzle rank", 0, 65);
-    rank_inp.set_size(40, 0);
+    rank_inp.set_size(32, 0);
     rank_inp.emit(s, Msg::RankInpChanged);
     let five_pin_chk = CheckButton::default()
         .with_size(150, 0)
