@@ -148,6 +148,7 @@ enum Msg {
     ItemClicked,
     AllItemsClicked,
     TimePlayedChanged,
+    NameInpChanged,
 }
 
 fn clamp_valuator(w: &mut impl ValuatorExt) {
@@ -176,6 +177,8 @@ fn main() {
     pack.set_spacing(8);
     let mut name_inp = Input::default().with_label("Name").with_size(0, 32);
     name_inp.set_maximum_size(17);
+    name_inp.set_trigger(CallbackTrigger::Changed);
+    name_inp.emit(s, Msg::NameInpChanged);
     let mut pack2 = Pack::default().with_size(0, 32);
     pack2.set_type(PackType::Horizontal);
     let mut money_inp = bounded_int_input("Cash", 0, PASSWORD_CASH[63] as i32);
@@ -461,9 +464,20 @@ fn main() {
                     let secs = rounded_secs % 60;
                     rounded_out.set_value(&format!("{:02}:{:02}:{:02}", hours, mins, secs));
                 }
+                Msg::NameInpChanged => {
+                    let entered_name = name_inp.value();
+                    name_inp.set_value(&valid_name(entered_name));
+                }
             }
         }
     }
+}
+
+fn valid_name(name: String) -> String {
+    name.to_ascii_uppercase()
+        .chars()
+        .filter(|c| matches!(c, 'A'..='Z' | '.' | ' '))
+        .collect()
 }
 
 fn pretty_print_password(pw: &BinString, name: &str) -> String {
