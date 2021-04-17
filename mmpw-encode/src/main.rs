@@ -1,5 +1,6 @@
 use fltk::{
-    app, button::*, frame::Frame, group::*, input::*, menu::*, output::*, valuator::*, window::*,
+    app, button::*, enums::*, frame::Frame, group::*, input::*, menu::*, output::*, prelude::*,
+    valuator::*, window::*,
 };
 use mmpw_validate::binstring::BinString;
 
