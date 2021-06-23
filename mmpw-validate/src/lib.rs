@@ -40,19 +40,19 @@ pub fn validate_bin(bs: &BinString) -> bool {
 #[test]
 fn test_validate() {
     let key = binstring::hash_name(b"DEW");
-    assert_eq!(validate(b"88H4B75X8FR9C54577", &key), false);
-    assert_eq!(validate(b"NEARBYSNOTTYSNEEZE", &key), true);
-    assert_eq!(validate(b"DOUBLECLINGYCUBONE", &key), true);
-    assert_eq!(validate(b"DOUBLEWIZARDSHOULD", &key), true);
-    assert_eq!(validate(b"PERMITTICKLYTANGLE", &key), true);
-    assert_eq!(validate(b"MEWTWOCOMPLYSTREAM", &key), true);
-    assert_eq!(validate(b"MACHOPGRAPEYSTRESS", &key), true);
-    assert_eq!(validate(b"NOODLEPIPLUPCAUSAL", &key), true);
-    assert_eq!(validate(b"DEOXYSCOITALABLAZE", &key), true);
-    assert_eq!(validate(b"NICKITUPWARDPLIANT", &key), true);
-    assert_eq!(validate(b"BLOBBYBIDOOFNEGATE", &key), true);
-    assert_eq!(validate(b"NIYB8BINC8O98PGYKK", &key), true);
-    assert_eq!(validate(b"NICBRBINC8O4PKGOZK", &key), true);
+    assert!(!validate(b"88H4B75X8FR9C54577", &key));
+    assert!(validate(b"NEARBYSNOTTYSNEEZE", &key));
+    assert!(validate(b"DOUBLECLINGYCUBONE", &key));
+    assert!(validate(b"DOUBLEWIZARDSHOULD", &key));
+    assert!(validate(b"PERMITTICKLYTANGLE", &key));
+    assert!(validate(b"MEWTWOCOMPLYSTREAM", &key));
+    assert!(validate(b"MACHOPGRAPEYSTRESS", &key));
+    assert!(validate(b"NOODLEPIPLUPCAUSAL", &key));
+    assert!(validate(b"DEOXYSCOITALABLAZE", &key));
+    assert!(validate(b"NICKITUPWARDPLIANT", &key));
+    assert!(validate(b"BLOBBYBIDOOFNEGATE", &key));
+    assert!(validate(b"NIYB8BINC8O98PGYKK", &key));
+    assert!(validate(b"NICBRBINC8O4PKGOZK", &key));
 }
 
 #[test]
@@ -69,6 +69,6 @@ fn test_validate_bin() {
     assert_eq!(bs, bs2);
     bs2.hash(&binstring::hash_name(b"DEW"));
     bs.hash(&binstring::hash_name(b"DEW"));
-    assert_eq!(validate_bin(&bs2), true);
-    assert_eq!(validate_bin(&bs), true);
+    assert!(validate_bin(&bs2));
+    assert!(validate_bin(&bs));
 }

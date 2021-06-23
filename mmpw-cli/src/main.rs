@@ -51,7 +51,7 @@ fn main() {
     }
 
     if opt.random {
-        go_random(&key_name_pairs[0].0, words, &key_name_pairs[0].1);
+        go_random(&key_name_pairs[0].0, words, key_name_pairs[0].1);
     } else {
         let mut count = 0;
         for (key, name) in key_name_pairs {
