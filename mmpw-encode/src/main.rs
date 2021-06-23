@@ -2,7 +2,7 @@ use fltk::{
     app, button::*, enums::*, frame::Frame, group::*, input::*, menu::*, output::*, prelude::*,
     valuator::*, window::*,
 };
-use mmpw_validate::binstring::BinString;
+use mmpw_validate::{binstring::BinString, CKSUM_BITS};
 
 const PASSWORD_CASH: [u32; 64] = [
     0, 100, 200, 300, 400, 500, 700, 900, 1100, 1300, 1500, 1600, 1900, 2100, 2400, 2700, 3100,
@@ -97,37 +97,37 @@ pub fn encode(player_data: &PlayerData) -> BinString {
     let has_every_item = n_items == 30;
     let mut writer = bs.writer();
     if has_every_item {
-        writer.write_int(1, 1);
-        writer.write_int(player_data.mystery_box_status as i32, 12);
-        writer.write_int(player_data.abra_bead_capacity as i32, 8);
-        writer.write_int(326, 10);
+        writer.write_int::<1>(1);
+        writer.write_int::<12>(player_data.mystery_box_status as i32);
+        writer.write_int::<8>(player_data.abra_bead_capacity as i32);
+        writer.write_int::<10>(326);
     } else {
-        writer.write_int(0, 1);
+        writer.write_int::<1>(0);
         for i in 0..30 {
-            writer.write_int(if player_data.items[i] { 1 } else { 0 }, 1);
+            writer.write_int::<1>(if player_data.items[i] { 1 } else { 0 });
         }
     }
-    writer.write_int(player_data.chat_states[0] as i32, 2);
-    writer.write_int(player_data.chat_states[1] as i32, 3);
-    writer.write_int(player_data.chat_states[2] as i32, 2);
-    writer.write_int(player_data.chat_states[3] as i32, 2);
-    writer.write_int(player_data.chat_states[4] as i32, 3);
-    writer.write_int(player_data.chat_states[5] as i32, 2);
-    writer.write_int(player_data.chat_states[6] as i32, 2);
-    writer.write_int(player_data.chat_states[7] as i32, 2);
-    writer.write_int(player_data.chat_states[8] as i32, 2);
-    writer.write_int(player_data.chat_states[9] as i32, 2);
-    writer.write_int(player_data.cash as i32, 6);
-    writer.write_int(player_data.abra_story as i32, 3);
-    writer.write_int(player_data.final_trial_count as i32, 3);
-    writer.write_int(player_data.rank as i32, 7);
-    writer.write_int(player_data.time_played as i32, 6);
-    writer.write_int(if player_data.five_peg { 1 } else { 0 }, 1);
-    writer.write_int(if player_data.seven_peg { 1 } else { 0 }, 1);
+    writer.write_int::<2>(player_data.chat_states[0] as i32);
+    writer.write_int::<3>(player_data.chat_states[1] as i32);
+    writer.write_int::<2>(player_data.chat_states[2] as i32);
+    writer.write_int::<2>(player_data.chat_states[3] as i32);
+    writer.write_int::<3>(player_data.chat_states[4] as i32);
+    writer.write_int::<2>(player_data.chat_states[5] as i32);
+    writer.write_int::<2>(player_data.chat_states[6] as i32);
+    writer.write_int::<2>(player_data.chat_states[7] as i32);
+    writer.write_int::<2>(player_data.chat_states[8] as i32);
+    writer.write_int::<2>(player_data.chat_states[9] as i32);
+    writer.write_int::<6>(player_data.cash as i32);
+    writer.write_int::<3>(player_data.abra_story as i32);
+    writer.write_int::<3>(player_data.final_trial_count as i32);
+    writer.write_int::<7>(player_data.rank as i32);
+    writer.write_int::<6>(player_data.time_played as i32);
+    writer.write_int::<1>(if player_data.five_peg { 1 } else { 0 });
+    writer.write_int::<1>(if player_data.seven_peg { 1 } else { 0 });
     let checksum = bs.calc_checksum();
     let mut writer = bs.writer();
     writer.skip(81);
-    writer.write_int(checksum as i32, mmpw_validate::CKSUM_BITS);
+    writer.write_int::<CKSUM_BITS>(checksum as i32);
     bs
 }
 

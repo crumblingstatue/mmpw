@@ -1,3 +1,5 @@
+#![feature(inline_const)]
+
 mod array_byte_vec;
 pub mod binstring;
 

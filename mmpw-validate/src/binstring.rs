@@ -147,15 +147,15 @@ fn binary_string_to_int(mut binstring: &[u8]) -> i32 {
 }
 
 fn shuffle(mut input: Vec<u8>) -> Vec<u8> {
-    input = one_shuffle(input, 2);
-    input = one_shuffle(input, 3);
-    one_shuffle(input, 5)
+    input = one_shuffle::<2>(input);
+    input = one_shuffle::<3>(input);
+    one_shuffle::<5>(input)
 }
 
-fn one_shuffle(input: Vec<u8>, parts: usize) -> Vec<u8> {
-    let mut vecs = vec![Vec::new(); parts];
+fn one_shuffle<const PARTS: usize>(input: Vec<u8>) -> Vec<u8> {
+    let mut vecs = [const { Vec::<u8>::new() }; PARTS];
     for (i, &byte) in input.iter().enumerate() {
-        let j = i % parts;
+        let j = i % PARTS;
         if j % 2 == 0 {
             vecs[j].insert(0, byte);
         } else {
@@ -197,9 +197,9 @@ pub struct Writer<'a> {
 }
 
 impl<'a> Writer<'a> {
-    pub fn write_int(&mut self, int: i32, n_digits: u8) {
+    pub fn write_int<const DIGITS: u8>(&mut self, int: i32) {
         self.cursor
-            .write_all(&int_to_bin_string(int, n_digits))
+            .write_all(&int_to_bin_string(int, DIGITS))
             .unwrap();
     }
     pub fn skip(&mut self, amount: u64) {
