@@ -60,9 +60,9 @@ const ALPHA_CODES: [char; 32] = [
     'O', '9', '4', 'P', 'D', 'U', 'C', 'E', 'S', 'M', 'N', 'B', 'L',
 ];
 
-const N_CHARS: usize = 18;
-const BITS_PER_CHAR: usize = 5;
-const BYTE_LEN: usize = N_CHARS * BITS_PER_CHAR;
+const N_CHARS: u8 = 18;
+const BITS_PER_CHAR: u8 = 5;
+const BYTE_LEN: usize = N_CHARS as usize * BITS_PER_CHAR as usize;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct BinString(ArrayByteVec<BYTE_LEN>);
@@ -78,8 +78,8 @@ impl BinString {
         let mut vec = ArrayByteVec::<BYTE_LEN>::zeroed_with_len(alnum.len() * 5);
         for (i, &alpha_val) in alnum.iter().enumerate() {
             let bin = alnum_to_bin(alpha_val);
-            for n in 0..5 {
-                vec[i as u8 * 5 + n] = bin.nth_bit_from_left(n);
+            for n in 0..BITS_PER_CHAR {
+                vec[i as u8 * BITS_PER_CHAR + n] = bin.nth_bit_from_left(n);
             }
         }
         unshuffle(&mut vec);
@@ -88,14 +88,16 @@ impl BinString {
     pub fn to_alphanumeric(&self, len: usize) -> String {
         let mut result = String::new();
         let mut tmp = self.0.to_vec();
-        while tmp.len() < len * 5 {
+        while tmp.len() < len * BITS_PER_CHAR as usize {
             tmp.push(0);
         }
         tmp = shuffle(tmp);
         for _ in 0..len {
-            let mut binary_char = tmp[0..5].to_owned();
-            tmp = tmp[5..].to_owned();
-            binary_char.extend_from_slice(&[0; 5][0..5 - binary_char.len()]);
+            let mut binary_char = tmp[0..BITS_PER_CHAR as usize].to_owned();
+            tmp = tmp[BITS_PER_CHAR as usize..].to_owned();
+            binary_char.extend_from_slice(
+                &[0; BITS_PER_CHAR as usize][0..BITS_PER_CHAR as usize - binary_char.len()],
+            );
             let binary_char_idx = binary_string_to_int(&binary_char);
             result.push(ALPHA_CODES[binary_char_idx as usize]);
         }
@@ -122,7 +124,7 @@ impl BinString {
         }
     }
     pub fn calc_checksum(&self) -> u32 {
-        const DIGITS_TO_READ: u8 = crate::LEN * 5 - crate::CKSUM_BITS;
+        const DIGITS_TO_READ: u8 = N_CHARS * BITS_PER_CHAR - crate::CKSUM_BITS;
         const CHEKSUM_DIVISOR: u32 = 2u32.pow(crate::CKSUM_BITS as u32);
 
         let mut checksum = CKSUM_INTS[0];
