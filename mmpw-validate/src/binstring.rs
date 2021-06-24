@@ -153,7 +153,8 @@ fn shuffle(mut input: Vec<u8>) -> Vec<u8> {
 }
 
 fn one_shuffle<const PARTS: usize>(input: Vec<u8>) -> Vec<u8> {
-    let mut vecs = [const { Vec::<u8>::new() }; PARTS];
+    const V: Vec<u8> = Vec::new();
+    let mut vecs = [V; PARTS];
     for (i, &byte) in input.iter().enumerate() {
         let j = i % PARTS;
         if j % 2 == 0 {
