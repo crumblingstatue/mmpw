@@ -60,18 +60,22 @@ const ALPHA_CODES: [char; 32] = [
     'O', '9', '4', 'P', 'D', 'U', 'C', 'E', 'S', 'M', 'N', 'B', 'L',
 ];
 
+const N_CHARS: usize = 18;
+const BITS_PER_CHAR: usize = 5;
+const BYTE_LEN: usize = N_CHARS * BITS_PER_CHAR;
+
 #[derive(Debug, PartialEq, Clone)]
-pub struct BinString(ArrayByteVec<90>);
+pub struct BinString(ArrayByteVec<BYTE_LEN>);
 
 impl BinString {
     pub fn zeroed() -> Self {
-        Self(ArrayByteVec::zeroed_with_len(90))
+        Self(ArrayByteVec::zeroed_with_len(BYTE_LEN))
     }
-    pub fn from_raw(raw: [u8; 90]) -> Self {
-        Self(ArrayByteVec::from_raw(raw, 90))
+    pub fn from_raw(raw: [u8; BYTE_LEN]) -> Self {
+        Self(ArrayByteVec::from_raw(raw, BYTE_LEN))
     }
     pub fn from_alphanumeric(alnum: &[u8]) -> Self {
-        let mut vec = ArrayByteVec::<90>::zeroed_with_len(alnum.len() * 5);
+        let mut vec = ArrayByteVec::<BYTE_LEN>::zeroed_with_len(alnum.len() * 5);
         for (i, &alpha_val) in alnum.iter().enumerate() {
             let bin = alnum_to_bin(alpha_val);
             for n in 0..5 {
@@ -98,7 +102,7 @@ impl BinString {
         result
     }
     pub fn hash(&mut self, key: &BinString) {
-        assert!(self.0.len() <= 90);
+        assert!(self.0.len() <= BYTE_LEN);
         for (sb, &kb) in self.0.iter_mut().zip(key.0.iter().cycle()) {
             if kb == 1 {
                 if *sb == 0 {
@@ -251,10 +255,10 @@ fn test_nth_bit_from_left() {
 }
 
 fn unshuffle(input: &mut [u8]) {
-    if input.len() == 90 {
+    if input.len() == BYTE_LEN {
         unshuffle_90(input);
     } else {
-        let mut work_buffer = ArrayByteVec::<90>::zeroed_with_len(input.len());
+        let mut work_buffer = ArrayByteVec::<BYTE_LEN>::zeroed_with_len(input.len());
         one_unshuffle::<5>(input, &mut work_buffer);
         one_unshuffle::<3>(&work_buffer, input);
         one_unshuffle::<2>(input, &mut work_buffer);
@@ -289,14 +293,14 @@ fn one_unshuffle<const PARTS: usize>(input: &[u8], output: &mut [u8]) {
 
 // Thank you Teddy for the awesome optimization!
 fn unshuffle_90(input: &mut [u8]) {
-    const INDEX_VEC: [usize; 90] = [
+    const INDEX_VEC: [usize; BYTE_LEN] = [
         2, 87, 81, 8, 14, 75, 33, 56, 62, 27, 21, 68, 38, 51, 45, 44, 50, 39, 69, 20, 26, 63, 57,
         32, 74, 15, 9, 80, 86, 3, 1, 88, 82, 7, 13, 76, 34, 55, 61, 28, 22, 67, 37, 52, 46, 43, 49,
         40, 70, 19, 25, 64, 58, 31, 73, 16, 10, 79, 85, 4, 0, 89, 83, 6, 12, 77, 35, 54, 60, 29,
         23, 66, 36, 53, 47, 42, 48, 41, 71, 18, 24, 65, 59, 30, 72, 17, 11, 78, 84, 5,
     ];
-    let mut new = [0; 90];
-    for i in 0..90 {
+    let mut new = [0; BYTE_LEN];
+    for i in 0..BYTE_LEN {
         new[i] = input[INDEX_VEC[i]];
     }
     input.copy_from_slice(&new);
