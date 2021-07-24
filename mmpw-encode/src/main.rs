@@ -185,7 +185,7 @@ fn main() {
     let mut money_inp = bounded_int_input("Cash", 0, PASSWORD_CASH[63] as i32);
     money_inp.set_size(80, 0);
     space(80, 0);
-    let money_rounded = Output::default().with_label("Rounded").with_size(80, 40);
+    let mut money_rounded = Output::default().with_label("Rounded").with_size(80, 40);
     pack2.end();
     money_inp.emit(s, Msg::MoneyInpChanged);
     let mut pack2 = Pack::default().with_size(0, 32);
@@ -219,7 +219,7 @@ fn main() {
     time_played_s_inp.set_size(32, 0);
     time_played_s_inp.emit(s, Msg::TimePlayedChanged);
     space(32, 0);
-    let rounded_out = Output::default().with_label("Rounded:").with_size(90, 0);
+    let mut rounded_out = Output::default().with_label("Rounded:").with_size(90, 0);
     pack2.end();
     pack.end();
     gr_basic.end();
