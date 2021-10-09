@@ -6,7 +6,7 @@ use structopt::StructOpt;
 pub fn load_words(path: &Path) -> Vec<[u8; 6]> {
     let text = std::fs::read_to_string(path).unwrap();
     let words = text.split_whitespace();
-    prepare_words(words)
+    prepare_words(words).unwrap()
 }
 
 #[derive(StructOpt)]
@@ -33,7 +33,7 @@ fn main() {
     let words: &[Word] = match (opt.custom_words, opt.custom_word_file) {
         (None, None) => &SIX_LETTER_WORDS,
         (Some(cust_words), None) => {
-            words = prepare_words(cust_words.iter().map(AsRef::as_ref));
+            words = prepare_words(cust_words.iter().map(AsRef::as_ref)).unwrap();
             &words[..]
         }
         (_, Some(word_file)) => {

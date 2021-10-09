@@ -60,30 +60,43 @@ fn show(pw: &Password, name: &str) {
     );
 }
 
-fn word_filter_map(word: &str) -> Option<[u8; 6]> {
+#[derive(Debug)]
+pub enum WordError {
+    /// Must be exactly 6 letters long
+    InvalidLength,
+    /// Invalid character found
+    InvalidChar(u8),
+}
+
+#[derive(Debug)]
+pub struct WordPrepareError {
+    pub word: String,
+    pub error: WordError,
+}
+
+fn word_filter_map(word: &str) -> Result<[u8; 6], WordError> {
     match word.as_bytes().try_into() {
         Ok(bword) => {
             let mut bword: Word = bword;
             bword.make_ascii_uppercase();
             if bword.contains(&b'V') {
-                eprintln!(
-                    "Warning: invalid word: \'{}\'. Passwords cannot contain the letter V.",
-                    word
-                );
-                return None;
+                return Err(WordError::InvalidChar(b'V'));
             }
-            Some(bword)
+            Ok(bword)
         }
-        Err(_) => {
-            eprintln!(
-                "Warning: invalid word \'{}\'. It must be exactly 6 letters long.",
-                word
-            );
-            None
-        }
+        Err(_) => Err(WordError::InvalidLength),
     }
 }
 
-pub fn prepare_words<'a>(words: impl Iterator<Item = &'a str>) -> Vec<[u8; 6]> {
-    words.filter_map(word_filter_map).collect()
+pub fn prepare_words<'a>(
+    words: impl Iterator<Item = &'a str>,
+) -> Result<Vec<[u8; 6]>, WordPrepareError> {
+    let mut vec = Vec::new();
+    for word in words {
+        match word_filter_map(word) {
+            Ok(word) => vec.push(word),
+            Err(error) => return Err(WordPrepareError { word: word.into(), error }),
+        }
+    }
+    Ok(vec)
 }

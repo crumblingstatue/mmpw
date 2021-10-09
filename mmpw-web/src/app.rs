@@ -1,14 +1,17 @@
 use eframe::{
-    egui::{self, Button, ScrollArea, TextEdit, Visuals},
+    egui::{self, Button, Color32, Label, ScrollArea, TextEdit, Visuals},
     epi,
 };
+use mmpw_gen::{WordError, WordPrepareError};
 use mmpw_validate::binstring;
+use std::fmt::Write;
 
 #[derive(Default)]
 pub struct App {
     passwords: String,
     words: String,
     name: String,
+    err: Option<WordPrepareError>,
 }
 
 impl epi::App for App {
@@ -30,6 +33,7 @@ impl epi::App for App {
             passwords,
             words,
             name,
+            err,
         } = self;
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("Monster Mind Password tool");
@@ -60,18 +64,42 @@ impl epi::App for App {
                 .add(Button::new("Find passwords").enabled(!name.is_empty() && !words.is_empty()))
                 .clicked()
             {
-                *passwords = generate(name, words);
+                match generate(name, words) {
+                    Ok(pws) => {
+                        *passwords = pws;
+                        *err = None;
+                    }
+                    Err(e) => *err = Some(e),
+                }
             }
             ui.separator();
             let n = passwords.lines().count();
-            let buf;
-            let text = if n == 0 {
-                "no password found"
-            } else {
-                buf = format!("{} passwords found for {}", n, name);
-                &buf
+            let mut buf;
+            let text = match err {
+                Some(WordPrepareError { error: err, word }) => {
+                    buf = format!("Word '{}' is incorrect: ", word);
+                    match err {
+                        WordError::InvalidLength => buf.push_str("Invalid word length: Must be 6"),
+                        WordError::InvalidChar(c) => {
+                            let _ = write!(buf, "Invalid character: {}", *c as char);
+                        }
+                    }
+                    &buf
+                }
+                None => {
+                    if n == 0 {
+                        "no password found"
+                    } else {
+                        buf = format!("{} passwords found for {}", n, name);
+                        &buf
+                    }
+                }
             };
-            ui.label(text);
+            let mut label = Label::new(text);
+            if err.is_some() {
+                label = label.text_color(Color32::RED);
+            }
+            ui.add(label);
             ScrollArea::from_max_height(240.).show(ui, |ui| {
                 let te = TextEdit::multiline(passwords)
                     .id_source("output_area")
@@ -84,8 +112,8 @@ impl epi::App for App {
     }
 }
 
-pub fn generate(name: &str, words: &str) -> String {
-    let prepared_words = mmpw_gen::prepare_words(words.split_whitespace());
+pub fn generate(name: &str, words: &str) -> Result<String, WordPrepareError> {
+    let prepared_words = mmpw_gen::prepare_words(words.split_whitespace())?;
     let mut buf = String::new();
     let key = binstring::hash_name(name.as_bytes());
     mmpw_gen::permutate(&key, &prepared_words, name, |pw, _name| {
@@ -97,5 +125,5 @@ pub fn generate(name: &str, words: &str) -> String {
         buf += &s[12..18];
         buf += "\n";
     });
-    buf
+    Ok(buf)
 }
