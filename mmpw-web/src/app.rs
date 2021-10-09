@@ -1,4 +1,7 @@
-use eframe::{egui::{self, Button, ScrollArea, TextEdit, Visuals}, epi};
+use eframe::{
+    egui::{self, Button, ScrollArea, TextEdit, Visuals},
+    epi,
+};
 use mmpw_validate::binstring;
 
 #[derive(Default)]
@@ -12,8 +15,13 @@ impl epi::App for App {
     fn name(&self) -> &str {
         "Monster mind password tool"
     }
-    
-    fn setup(&mut self, ctx: &egui::CtxRef, _frame: &mut epi::Frame<'_>, _storage: Option<&dyn epi::Storage>) {
+
+    fn setup(
+        &mut self,
+        ctx: &egui::CtxRef,
+        _frame: &mut epi::Frame<'_>,
+        _storage: Option<&dyn epi::Storage>,
+    ) {
         ctx.set_visuals(Visuals::dark());
     }
 
@@ -60,7 +68,7 @@ impl epi::App for App {
             let text = if n == 0 {
                 "no password found"
             } else {
-                buf = format!("{} passwords found", n);
+                buf = format!("{} passwords found for {}", n, name);
                 &buf
             };
             ui.label(text);
