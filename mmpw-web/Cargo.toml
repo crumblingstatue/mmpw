@@ -12,4 +12,4 @@ crate-type = ["cdylib"]
 [dependencies]
 mmpw-gen = {path = "../mmpw-gen"}
 mmpw_validate = {path = "../mmpw-validate"}
-wasm-bindgen = "0.2.73"
+wasm-bindgen = "0.2.78"
