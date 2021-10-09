@@ -1,15 +1,22 @@
 [package]
 name = "mmpw-web"
 version = "0.1.0"
-authors = ["crumblingstatue <radiantstatue@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-mmpw-gen = {path = "../mmpw-gen"}
-mmpw_validate = {path = "../mmpw-validate"}
-wasm-bindgen = "0.2.78"
+eframe = "0.14.0"
+
+[dependencies.mmpw-gen]
+path = "../mmpw-gen"
+
+[dependencies.mmpw_validate]
+path = "../mmpw-validate"
+
+[dependencies.getrandom]
+version = "*"
+features = ["js"]

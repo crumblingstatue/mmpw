@@ -1,49 +1,23 @@
-use mmpw_validate::binstring;
-use wasm_bindgen::prelude::*;
+#![forbid(unsafe_code)]
+#![cfg_attr(not(debug_assertions), deny(warnings))] // Forbid warnings in release builds
+#![warn(clippy::all, rust_2018_idioms)]
 
+mod app;
+pub use app::App;
+
+// ----------------------------------------------------------------------------
+// When compiling for web:
+
+#[cfg(target_arch = "wasm32")]
+use eframe::wasm_bindgen::{self, prelude::*};
+
+/// This is the entry-point for all the web-assembly.
+/// This is called once from the HTML.
+/// It loads the app, installs some callbacks, then returns.
+/// You can add more callbacks like this if you want to call in to your code.
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
-pub fn doit(names_arg: JsValue, words_arg: JsValue) -> Result<JsValue, JsValue> {
-    let words = words_arg.as_string().unwrap();
-    let names = names_arg.as_string().unwrap();
-    let prepared_words = mmpw_gen::prepare_words(words.split_whitespace());
-    let mut buf = String::new();
-    let mut limiter = 0;
-    for name in mmpw_gen::NAMES.iter() {
-        let key = binstring::hash_name(name.as_bytes());
-        limiter += mmpw_gen::permutate(&key, &prepared_words, name, |pw, name| {
-            buf += name;
-            buf += ": ";
-            let s = std::str::from_utf8(pw).unwrap();
-            buf += &s[0..6];
-            buf += " ";
-            buf += &s[6..12];
-            buf += " ";
-            buf += &s[12..18];
-            buf += "\n";
-        });
-        if limiter > 1000 {
-            buf += "Limiting results to avoid hanging your browser. Sorry.\n";
-            break;
-        }
-    }
-    for name in names.split_whitespace() {
-        let key = binstring::hash_name(name.as_bytes());
-        limiter += mmpw_gen::permutate(&key, &prepared_words, name, |pw, name| {
-            buf += name;
-            buf += ": ";
-            let s = std::str::from_utf8(pw).unwrap();
-            buf += &s[0..6];
-            buf += " ";
-            buf += &s[6..12];
-            buf += " ";
-            buf += &s[12..18];
-            buf += "\n";
-        });
-        if limiter > 1000 {
-            buf += "Limiting results to avoid hanging your browser. Sorry.\n";
-            break;
-        }
-    }
-
-    Ok(JsValue::from_str(&buf))
+pub fn start(canvas_id: &str) -> Result<(), eframe::wasm_bindgen::JsValue> {
+    let app = App::default();
+    eframe::start_web(canvas_id, Box::new(app))
 }
